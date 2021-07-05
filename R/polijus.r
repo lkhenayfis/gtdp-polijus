@@ -1,4 +1,7 @@
 #' Pacote polijus
 #' 
-#' @useDynLib polijus, .registration = TRUE
+#' @docType package
+#' @name polijus
+#' @useDynLib polijus
 #' @importFrom Rcpp sourceCpp
+NULL

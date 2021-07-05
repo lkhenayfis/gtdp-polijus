@@ -4,12 +4,7 @@
 using namespace Rcpp;
 using namespace std;
 
-//======================================================================
-
-// Funcao que interpola entre pontos fornecidos xData e yData ou extrapola com base na tendencia 
-// linear dos ultimos nExtrap pontos
-// E assumido que todos os vetores fornecidos sejam ordenados e possuem no minimo comprimento 2
-
+//' @export
 // [[Rcpp::export]]
 NumericVector predictCpp2( NumericVector &xData, NumericVector &yData, NumericVector xPred )
 {
