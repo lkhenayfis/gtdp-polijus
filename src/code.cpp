@@ -1,7 +1,7 @@
 #include <cmath>
-#include <vector>
 #include <Rcpp.h>
 
+using namespace Rcpp;
 using namespace std;
 
 //======================================================================
@@ -11,7 +11,7 @@ using namespace std;
 // E assumido que todos os vetores fornecidos sejam ordenados e possuem no minimo comprimento 2
 
 // [[Rcpp::export]]
-vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector<double> xPred )
+NumericVector predictCpp2( NumericVector &xData, NumericVector &yData, NumericVector xPred )
 {
   
   // Tamanho do vetor de previsao
@@ -21,7 +21,7 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
   int sizeData = xData.size();
   
   // Inicia vetor de saida
-  vector<double> out(sizePred);
+  NumericVector out(sizePred);
   
   // Variavel de quantos pontos serao usados nas extrapolacoes
   int nExtrap = 2;
@@ -41,14 +41,14 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
   if ( xPred[sizePred - 1] >= xData[sizeData - 1])
   {
     // Extrai ultimos cinco elementos de xData e yData
-    vector<double> xDataDir(nExtrap);
+    NumericVector xDataDir(nExtrap);
     
     for(int k = 0; k < nExtrap; ++k)
     {
       xDataDir[k] = xData[sizeData - nExtrap + k];
     }
     
-    vector<double> yDataDir (nExtrap);
+    NumericVector yDataDir (nExtrap);
     
     for (int k = 0; k < nExtrap; ++k)
     {
@@ -56,7 +56,7 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
     }
     
     // Cria vetor de xDataDir ao quadrado
-    vector<double> xDataDir2 = xDataDir;
+    NumericVector xDataDir2 = xDataDir;
     
     for(int k = 0; k < nExtrap; ++k)
     {
@@ -64,7 +64,7 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
     }
     
     // Cria vetor de xDataDir * yDataDir
-    vector<double> xyDataDir = xDataDir;
+    NumericVector xyDataDir = xDataDir;
     
     for (int k = 0; k < nExtrap; ++k)
     {
@@ -115,14 +115,14 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
   if ( xPred[0] <= xData[0])
   {
     // Extrai primeiros cinco elementos de xData e yData
-    vector<double> xDataEsq(nExtrap);
+    NumericVector xDataEsq(nExtrap);
     
     for(int k = 0; k < nExtrap; ++k)
     {
       xDataEsq[k] = xData[k];
     }
     
-    vector<double> yDataEsq (nExtrap);
+    NumericVector yDataEsq (nExtrap);
     
     for (int k = 0; k < nExtrap; ++k)
     {
@@ -130,7 +130,7 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
     }
     
     // Cria vetor de xDataEsq ao quadrado
-    vector<double> xDataEsq2 = xDataEsq;
+    NumericVector xDataEsq2 = xDataEsq;
     
     for(int k = 0; k < nExtrap; ++k)
     {
@@ -138,7 +138,7 @@ vector<double> predictCpp2( vector<double> &xData, vector<double> &yData, vector
     }
     
     // Cria vetor de xDataEsq * yDataEsq
-    vector<double> xyDataEsq = xDataEsq;
+    NumericVector xyDataEsq = xDataEsq;
     
     for (int k = 0; k < nExtrap; ++k)
     {
