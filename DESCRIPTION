@@ -1,0 +1,28 @@
+Package: polijus
+Title: Pacote para desenvolvimento de curvas vazão-nível de jusante conforme metodologia 
+    estabelecida pelo GTDP
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Lucas",
+           family = "Khenayfis",
+           role = c("aut", "cre"),
+           email = "lkhenayfis@ons.org.br")
+Description: Este pacote contém o conjunto de funções necessárias para leitura, tratamento e 
+    modelagem dos dados históricos horários obtidos pelo GTDP atráves dos agentes para ajuste e 
+    diagnósticos de novas curvas ou superfícies vazão-nível de jusante, segundo metodologia 
+    acordada pelo grupo.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+LinkingTo: 
+    Rcpp
+Imports: 
+    Rcpp (>= 1.0.6),
+    readxl (>= 1.3.1),
+    lsei (>= 1.3-0),
+    quantreg (>= 5.86),
+    binhf (>= 1.0-3),
+    lubridate (>= 1.7.10),
+    cli (>= 3.0.0)
