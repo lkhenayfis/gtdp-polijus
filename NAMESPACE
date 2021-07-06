@@ -2,7 +2,7 @@
 
 S3method(plot,datpoli)
 S3method(print,datpoli)
-export(filtravazoesest)
+export(filtravazest)
 export(importadados)
 export(new_datpoli)
 export(predictCpp2)

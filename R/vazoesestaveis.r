@@ -53,12 +53,13 @@
 #' 
 #' @export
 
-filtravazoesest <- function(dat, n = 6, tol = .05) {
+filtravazest <- function(dat, n = 6, tol = .05) {
 
     if(class(dat) != "datpoli") {
         stop("Parametro dat nao tem classe 'datpoli' -- Foi utilizada a funcao polijus::new_datpoli para contrui-lo?")
     }
 
+    valido <- dat$hist$valido
     vazoes <- dat$hist$vazao
     tempo  <- as.numeric(dat$hist$datahora)
     size <- length(vazoes)
@@ -70,26 +71,16 @@ filtravazoesest <- function(dat, n = 6, tol = .05) {
 
     for(i in 2:size) {
 
-        if(diff(tempo[(i - 1):i]) != 3600) {seqestavel <- rep(NA_real_, n); next}
+        if((diff(tempo[(i - 1):i]) != 3600) | !(valido[i])) {
+            seqestavel <- rep(NA_real_, n)
+            next
+        }
 
-        vazao_i <- vazoes[i]
-
-        if(all(is.na(seqestavel))) {seqestavel[1] <- vazao_i; next}
-
-        # Adiciona a janela seqestavel e testa consistencia entre registros
         prox <- which(is.na(seqestavel))[1]
-        seqestavel[prox] <- vazao_i
-        consis <- abs(seqestavel[-1] - seqestavel[1]) / seqestavel[1]
+        seqestavel[prox] <- vazoes[i]
+
+        consis <- abs(seqestavel - seqestavel[1]) / seqestavel[1]
         if(!all(consis[!is.na(consis)] < tol)) {
-
-            # Checa primeiro se so existem dois registros na janela
-            if(prox == 2) {
-
-                # Nesse caso, basta remover o primeiro e seguir com o loop
-                seqestavel[1] <- NA_real_
-                seqestavel <- binhf::shift(seqestavel, -1)
-                next
-            }
 
             # Caso haja mais de dois, vai removendo o mais a esquerda e testando de novo ate sobrar so um
             ok <- FALSE
@@ -100,7 +91,7 @@ filtravazoesest <- function(dat, n = 6, tol = .05) {
 
                 if(sum(!is.na(seqestavel)) == 1) break
 
-                consis <- abs(seqestavel[-1] - seqestavel[1]) / seqestavel[1]
+                consis <- abs(seqestavel - seqestavel[1]) / seqestavel[1]
 
                 if(all(consis[!is.na(consis)] < tol)) ok <- TRUE
             }
