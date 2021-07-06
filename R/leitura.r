@@ -163,6 +163,8 @@ tratahist <- function(hist) {
     hist[njus < 0, valido := FALSE]
     hist[nmont < 0, valido := FALSE]
 
+    hist[!complete.cases(hist), valido := FALSE]
+
     return(hist)
 }
 
