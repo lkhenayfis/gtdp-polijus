@@ -27,9 +27,6 @@
 #' 
 #' @seealso \code{\link{new_datpoli}} para construtor do objeto de saída
 #' 
-#' @import data.table
-#' @importFrom readxl read_xlsx
-#' 
 #' @export
 
 importadados <- function(path = NULL) {
@@ -37,15 +34,15 @@ importadados <- function(path = NULL) {
     if(is.null(path)) path <- file.choose()
 
     # Le cadastro e pega codigo da usina
-    cad <- read_xlsx(path, sheet = 1)
+    cad <- readxl::read_xlsx(path, sheet = 1)
     cod <- as.numeric(cad[1, 2])
 
     # Leitura do historico
-    hist <- setDT(read_xlsx(path, sheet = 2))
+    hist <- setDT(readxl::read_xlsx(path, sheet = 2))
     colnames(hist) <- c("data", "hora", "njus", "vazao", "nmont", "valido")
 
     # Leitura dos dados de extensao
-    ext <- setDT(read_xlsx(path, sheet = "Extensao", col_types = "numeric", skip = 1))
+    ext <- setDT(readxl::read_xlsx(path, sheet = "Extensao", col_types = "numeric", skip = 1))
     ext <- lapply(seq(ncol(ext))[c(TRUE, FALSE)], function(i) {
         cols <- c(i, i + 1)
         out <- ext[, ..cols]
@@ -139,8 +136,6 @@ print.datpoli <- function(dat) print(dat$hist)
 
 # HELPERS ------------------------------------------------------------------------------------------
 
-#' @import data.table
-
 tratahist <- function(hist) {
 
     if(!is.data.table(hist)) hist <- as.data.table(hist)
@@ -168,8 +163,6 @@ tratahist <- function(hist) {
 
     return(hist)
 }
-
-#' @import data.table
 
 trataext <- function(ext) {
 
