@@ -106,6 +106,8 @@ importadados <- function(path = NULL) {
 #' new_datpoli(cod = 6, hist = d_hist, ext = l_ext)
 #' 
 #' @export
+#' 
+#' @rdname importadados
 
 new_datpoli <- function(path, cod, hist, ext) {
 
