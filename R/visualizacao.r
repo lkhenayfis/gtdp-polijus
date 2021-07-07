@@ -19,7 +19,7 @@
 #' }
 #' 
 #' Deve ser notado que a opção \code{"filtrados"} só é viável após a classificação e filtragem de 
-#' dados por patamar através de \code{\link{classfiltrapat}}. Similarmente, a opção \code{"todos"} 
+#' dados por patamar através de \code{\link{classfiltrapats}}. Similarmente, a opção \code{"todos"} 
 #' só plota os dados filtrados após execução desta função.
 #' 
 #' A segunda alternativa é o plot de dados por patamar. Neste caso o parâmetro \code{qual} deve ser 
