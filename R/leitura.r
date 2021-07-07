@@ -53,7 +53,7 @@ importadados <- function(path = NULL) {
         out
     })
 
-    new_datpoli(cod, hist, ext)
+    new_datpoli(path, cod, hist, ext)
 }
 
 #' Inicializador de objeto datpoli
@@ -110,7 +110,7 @@ importadados <- function(path = NULL) {
 #' 
 #' @export
 
-new_datpoli <- function(cod, hist, ext) {
+new_datpoli <- function(path, cod, hist, ext) {
 
     hist <- tratahist(hist)
     ext  <- trataext(ext)
@@ -121,13 +121,14 @@ new_datpoli <- function(cod, hist, ext) {
     fun  <- function(x) coef[1] + coef[2] * x + coef[3] * x^2 + coef[4] * x^3 + coef[5] * x^4
     ext  <- c(list(CAD = fun), ext)
 
-    new <- list(hist = hist, hist_est = NULL, ext = ext)
+    new <- list(hist = hist, hist_est = NULL, ext = ext, patinfo = NULL)
     class(new) <- "datpoli"
 
+    attr(new, "path")  <- path
     attr(new, "cod")   <- cod
     attr(new, "vazef") <- vazef
-    attr(new, "estavel")  <- FALSE
-    attr(new, "filtrado") <- FALSE
+    attr(new, "estavel")   <- FALSE
+    attr(new, "classpats") <- FALSE
 
     return(new)
 }
