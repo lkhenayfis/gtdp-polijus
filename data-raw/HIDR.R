@@ -1,3 +1,5 @@
+devtools::load_all()
+
 ########################## Preparo do hidr **COM CADASTRO ANTIGO**
 
 HIDR <- read.csv("data-raw/HIDR.csv", fill = TRUE, sep = ";", dec = ",", stringsAsFactors = FALSE)
@@ -25,3 +27,12 @@ dummy[, 4] <- 1 / 1400
 HIDR <- rbind(HIDR, dummy)
 
 usethis::use_data(HIDR, internal = TRUE, overwrite = TRUE)
+
+
+########################## EXEMPLO DE DADO IMPORTADO
+
+path <- system.file("extdata", "dummydata.xlsx", package = "polijus")
+
+dummydata <- importadados(path)
+
+usethis::use_data(dummydata, overwrite = TRUE)
