@@ -19,5 +19,9 @@ HIDR <- cbind(USI = HIDR[, 1], VAZEF = vazef, HIDR[, colpvn])
 dummy <- HIDR[1, ]
 dummy$USI <- 999
 dummy$VAZEF <- 950
+dummy[, 3] <- 9
+dummy[, 4] <- 1 / 1400
+
+HIDR <- rbind(HIDR, dummy)
 
 usethis::use_data(HIDR, internal = TRUE, overwrite = TRUE)

@@ -31,6 +31,25 @@
 #' 
 #' @return plot das informações requisitadas em \code{qual}
 #' 
+#' @examples 
+#' 
+#' # detecta vazoes estaveis
+#' dat <- filtravazest(dummydata)
+#' 
+#' # classifica e filtra por patamares
+#' dat <- classfiltrapats(dat)
+#' 
+#' # plot
+#' plot(dat, "todos") # dado completo
+#' plot(dat, "estaveis") # apenas aqueles em condicao estavel
+#' plot(dat, "pat_020.5") # plot de um patamar especifico
+#' 
+#' \dontrun{
+#' 
+#' # tentar plots de informacoes ainda nao geradas resulta em erro
+#' plot(dummydata, "filtrados") # dummydata so contem dados brutos, nao existe ainda o historico filtrado
+#' }
+#' 
 #' @export
 #' 
 #' @rdname importadados
@@ -42,9 +61,24 @@ plot.datpoli <- function(dat, qual, ...) {
 
     patamar <- grepl("pat_", qual)
 
+    ranges <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
+
     if(!patamar) {
 
         qual <- strsplit(qual, "\\+")[[1]]
+
+        # tira estavel ou filtrado de qual se o dado ainda nao passou por essas fases
+        if(!attr(dat, "estavel") & ("estaveis" %in% qual)) {
+            qual <- qual[!grepl("estaveis", qual)]
+            warning(paste0("'qual' inclui dados de vazao estaveis, porem esta avaliacao ainda nao foi realizada",
+                "\n Use polijus::filtravazest()"))
+        }
+        if(!attr(dat, "classpats") & ("filtrados" %in% qual)) {
+            qual <- qual[!grepl("filtrados", qual)]
+            warning(paste0("'qual' inclui dados filtrados, porem esta avaliacao ainda nao foi realizada",
+                "\n Use polijus::classfiltrapats()"))
+        }
+        if(length(qual) == 0) stop("Nao ha dados para plotar")
 
         dplot <- list(copy(dat[[1]]), copy(dat[[2]]))
         colunas <- c("vazao", "njus", "valido", "tipo")
@@ -52,15 +86,13 @@ plot.datpoli <- function(dat, qual, ...) {
         dplot[[1]][, tipo := "brutos"]
         dplot[[1]] <- dplot[[1]][, ..colunas]
 
-        if(attr(dat, "estavel") == TRUE) {
-            if(attr(dat, "classpats") == TRUE) {
-                dplot[[2]] <- dplot[[2]][, .SD, .SDcols = c("vazao", "njus", "valido")]
-                dplot[[2]][valido == FALSE, tipo := "estaveis"]
-                dplot[[2]][valido == TRUE, tipo := "filtrados"]
-            } else {
-                dplot[[2]] <- dplot[[2]][, .SD, .SDcols = c("vazao", "njus", "valido")]
-                dplot[[2]][, tipo := "estaveis"]
-            }
+        if(("filtrados" %in% qual)) {
+            dplot[[2]] <- dplot[[2]][, .SD, .SDcols = c("vazao", "njus", "valido")]
+            dplot[[2]][valido == FALSE, tipo := "estaveis"]
+            dplot[[2]][valido == TRUE, tipo := "filtrados"]
+        } else if("estaveis" %in% qual) {
+            dplot[[2]] <- dplot[[2]][, .SD, .SDcols = c("vazao", "njus", "valido")]
+            dplot[[2]][, tipo := "estaveis"]
         }
 
         dplot <- rbindlist(dplot)
@@ -68,14 +100,15 @@ plot.datpoli <- function(dat, qual, ...) {
         setorder(dplot, "tipo")
         dplot <- dplot[tipo %in% qual]
 
-        escala <- c(brutos = "slategray2", estaveis = "deepskyblue4", filtrados = "purple2")
+        escala <- c(brutos = "gray90", estaveis = "skyblue1", filtrados = "deepskyblue3")
         cores <- unname(dplot[, escala[tipo]])
 
-        plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores,
+        plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores, pch = 16,
+            xlim = ranges[[1]], ylim = ranges[[2]],
             xlab = "Vazão defluente [m³/s]", ylab = "Nível de jusante [m]")
         legend("bottomright", inset = .02, title = "Dados ",
-            pch = 1, legend = levels(dplot$tipo),
-            col = escala)
+            legend = sub("estaveis", "estáveis", qual), pch = 16,
+            col = escala[qual])
     } else {
 
         qual <- sub("pat_", "", qual)
@@ -86,15 +119,12 @@ plot.datpoli <- function(dat, qual, ...) {
         vx <- seq(min(dplot$vazao), max(dplot$vazao), length.out = 500)
         ly <- lapply(filtro[[1]], predict, newdata = data.frame(vazao = vx))
 
-        ranges <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
-
         escala <- c("deepskyblue2", "purple", "red", "orange", "yellow2")
         dplot[, filtro := filtro$filtro]
         dplot[, cores := escala[filtro+ 1]]
 
-        plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = dplot$cores,
+        plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = dplot$cores, pch = 16,
             xlim = ranges[[1]], ylim = ranges[[2]],
             xlab = "Vazão defluente [m³/s]", ylab = "Nível de jusante [m]")
     }
-
 }
