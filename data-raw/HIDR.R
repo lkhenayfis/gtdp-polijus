@@ -16,4 +16,8 @@ colpvn <- grep("PJA[[:digit:]]\\.[[:digit:]]", colnames(HIDR))
 
 HIDR <- cbind(USI = HIDR[, 1], VAZEF = vazef, HIDR[, colpvn])
 
+dummy <- HIDR[1, ]
+dummy$USI <- 999
+dummy$VAZEF <- 950
+
 usethis::use_data(HIDR, internal = TRUE, overwrite = TRUE)
