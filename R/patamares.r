@@ -17,21 +17,19 @@
 #' 
 #' @examples 
 #' 
-#' \dontrun{
-#' 
-#' # leitura de uma planilha front
-#' dat <- importadados()
-#' 
 #' # filtra vazoes estaveis
-#' dat <- filtravazest(dat)
+#' dat <- filtravazest(dummydata)
 #' 
 #' # classifica e filtra patamares
 #' dat <- classfiltrapats(dat)
-#' }
 #' 
 #' @export
 
 classfiltrapats <- function(dat, tol = c(3, 2, 1.15), plot.dir) {
+
+    if(!attr(dat, "estavel")) {
+        stop("'dat' ainda nao passou pelo filtro de vazoes estaveis -- use polijus::filtravazest")
+    }
 
     # Classificacao
     hist_est <- dat$hist_est
