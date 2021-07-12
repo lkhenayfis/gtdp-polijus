@@ -43,7 +43,7 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.15), plot.dir) {
 
     dat$hist_est <- hist_est
     dat$patinfo  <- filtros
-    attr(dat, "classpats") <- TRUE
+    attr(dat, "classificado") <- TRUE
 
     if(!missing(plot.dir)) {
         if(plot.dir == "auto") {

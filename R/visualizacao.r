@@ -73,7 +73,7 @@ plot.datpoli <- function(dat, qual, ...) {
             warning(paste0("'qual' inclui dados de vazao estaveis, porem esta avaliacao ainda nao foi realizada",
                 "\n Use polijus::filtravazest()"))
         }
-        if(!attr(dat, "classpats") & ("filtrados" %in% qual)) {
+        if(!attr(dat, "classificado") & ("filtrados" %in% qual)) {
             qual <- qual[!grepl("filtrados", qual)]
             warning(paste0("'qual' inclui dados filtrados, porem esta avaliacao ainda nao foi realizada",
                 "\n Use polijus::classfiltrapats()"))

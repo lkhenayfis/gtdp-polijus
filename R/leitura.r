@@ -126,8 +126,8 @@ new_datpoli <- function(path, cod, hist, ext) {
     attr(new, "path")  <- path
     attr(new, "cod")   <- cod
     attr(new, "vazef") <- vazef
-    attr(new, "estavel")   <- FALSE
-    attr(new, "classpats") <- FALSE
+    attr(new, "estavel") <- FALSE
+    attr(new, "classificado") <- FALSE
 
     return(new)
 }
