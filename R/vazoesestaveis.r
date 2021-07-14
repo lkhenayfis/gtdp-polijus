@@ -87,7 +87,7 @@ filtravazest <- function(dat, n = 6, tol = .05) {
             while(!ok) {
 
                 seqestavel[1] <- NA_real_
-                seqestavel <- binhf::shift(seqestavel, -1)
+                seqestavel <- shift(seqestavel, -1)
 
                 if(sum(!is.na(seqestavel)) == 1) break
 
@@ -116,4 +116,16 @@ filtravazest <- function(dat, n = 6, tol = .05) {
     attr(dat, "estavel") <- TRUE
 
     return(dat)
+}
+
+# HELPERS ------------------------------------------------------------------------------------------
+
+shift <- function(vec, lag) {
+    size <- length(vec)
+    index <- seq(vec)
+    if(sign(lag) == 1) {
+        vec[c(tail(index, lag), head(index, size - lag))]
+    } else {
+        vec[c(tail(index, size - abs(lag)), head(index, abs(lag)))]
+    }
 }
