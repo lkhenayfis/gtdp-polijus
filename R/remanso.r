@@ -14,7 +14,6 @@ evalremanso <- function(dat, tol = .05, step = 2) {
 
         checaconv(pat1, pat2, tol, vazmin, dat)
     })
-
     converg <- c(lapply(seq(step), function(x) c(vazconv = NA, convimed = NA)), converg)
 
     dat$patinfo <- mapply(dat$patinfo, converg, SIMPLIFY = FALSE, FUN = function(pat, conv) {
@@ -61,8 +60,11 @@ checaconv <- function(pat1, pat2, tol, vazmin, dat) {
     ydata1 <- if(class(m1) == "loess") m1$fitted else m1$fitted.values
     ydata2 <- if(class(m2) == "loess") m2$fitted else m2$fitted.values
 
-    predy1 <- predictCpp2(xdata1, ydata1, predx)
-    predy2 <- predictCpp2(xdata2, ydata2, predx)
+    order1 <- order(xdata1)
+    order2 <- order(xdata2)
+
+    predy1 <- predictCpp2(xdata1[order1], ydata1[order1], predx)
+    predy2 <- predictCpp2(xdata2[order2], ydata2[order2], predx)
 
     dif    <- predy2 - predy1
     diftol <- !is.na(dif) & (abs(dif) < tol)
