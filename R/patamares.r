@@ -82,7 +82,6 @@ tratapats <- function(dpat, tol) {
     elim <- integer(size)
 
     # primeira eliminacao -- absurdos inferiores
-    corta0 <- dpat[, min(njus)]
     if((size > 2) & (!all(niveisj == niveisj[1]))) {
         elim[niveisj <= quantile(niveisj, .03)] <- 1
     }
