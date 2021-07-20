@@ -62,6 +62,7 @@ plot.datpoli <- function(dat, qual, ...) {
     if(grepl("(brutos)|(estaveis)|(filtrados)", qual)) plot_func <- plota_datfull
     if(grepl("^pat_", qual)) plot_func <- plota_patfiltro
     if(grepl("^conv_", qual)) plot_func <- plota_patconv
+    if(grepl("^remanso$", qual)) plot_func <- plota_remanso
 
     plot_func(dat, qual)
 }
@@ -116,6 +117,49 @@ plota_datfull <- function(dat, qual) {
     legend("bottomright", inset = .02, title = "Dados ",
         legend = sub("estaveis", "estáveis", qual), pch = 16,
         col = escala[qual])
+}
+
+plota_remanso <- function(dat, ...) {
+
+    if(!attr(dat, "evalremanso")) {
+        stop(paste0("'qual' se refere ao efeito de remanso, porem esta analise ainda",
+            " nao foi realizada", "\n Use polijus::evalremanso"))
+    }
+
+    ranges   <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
+
+    remanso <- sapply(dat$patinfo, "[[", "remanso")
+    vazconv <- sapply(dat$patinfo, "[[", "vazconv")
+
+    dplot <- copy(dat$hist_est)
+
+    # Dados sem efeito de remanso
+    dplot[, temremanso := TRUE]
+    dplot[pat %in% names(remanso[!remanso]), temremanso := FALSE]
+    for(p in names(remanso[remanso])) {
+        dplot[(pat == p) & (vazao > vazconv[p]), temremanso := FALSE]
+    }
+    setorderv(dplot, "temremanso", -1)
+
+    dbar <- dplot[, .("com" = sum(temremanso), "sem" = sum(!temremanso)), by = pat]
+    setorder(dbar, pat)
+    dbar <- t(data.matrix(dbar))[-1, ]
+
+    layout(matrix(c(1, 2), 2, 1))
+    plot(dplot$vazao, dplot$njus, pnael.first = grid(col = "grey85"),
+        col = ifelse(dplot$temremanso, "deepskyblue2", "green4"),
+        xlim = ranges[[1]], ylim = ranges[[2]],
+        xlab = expression('Vazão [m'^3*'/s]'), ylab = "Nível de jusante [m]",
+        main = "Dispersão do efeito de remanso no histórico equivalente filtrado")
+
+    barplot(dbar, , xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = "white", border = NA)
+    grid(nx = NA, ny = NULL)
+    par(new = TRUE)
+    barplot(dbar, col = c("deepskyblue2", "green4"), names.arg = sort(unique(dplot$pat)),
+        xlab = "Patamar", ylab = "Contagem", main  = "Número de registros por patamar")
+
+    legend("topleft", inset = 0.02, legend = c("Com remanso", "Sem remanso"),
+        fill = c("deepskyblue2", "green4"))
 }
 
 plota_patfiltro <- function(dat, qual) {
