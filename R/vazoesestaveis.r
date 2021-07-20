@@ -108,7 +108,7 @@ filtravazest <- function(dat, n = 6, tol = .05) {
     # Toma medias do historico nas janelas estaveis
     hist_est <- copy(dat$hist)
     hist_est[, estavel := tagestavel]
-    hist_est <- hist_est[estavel != 0, lapply(.SD, mean), by = estavel, .SDcols = 1:5]
+    hist_est <- hist_est[estavel != 0, lapply(.SD, meanunique), by = estavel, .SDcols = 1:5]
     hist_est[, valido := as.logical(valido)]
 
     # Compoe saida
@@ -128,4 +128,18 @@ shift <- function(vec, lag) {
     } else {
         vec[c(tail(index, size - abs(lag)), head(index, abs(lag)))]
     }
+}
+
+# Esta funcao se faz necessaria pois em casos de media de n floats iguais usualmente tem um erro de
+# arredondamento na ordem de 1e-15 ou menos. Por mais insignificante que pareca, isso pode levar a
+# flutuacoes na classificacao de patamares.
+# por exemplo, suponhamos a media de seis valores iguais a 445.450000000000000
+# Em determinados casos a media deste vetor pode resultar em 445.449999999999999.
+# O valor original, quando arrendodado para uma casa decimal vale 445.5, enquanto o segundo daria
+# 445.4, gerando inconsistencia na classificacao.
+
+meanunique <- function(vec, tol = 1e-5) {
+
+    diferentes <- all(abs(vec - vec[1]) < tol)
+    if(!diferentes) return(mean(vec)) else return(vec[1])
 }
