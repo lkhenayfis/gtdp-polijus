@@ -25,7 +25,7 @@
 #' 
 #' @export
 
-classfiltrapats <- function(dat, tol = c(3, 2, 1.15), plot.dir) {
+classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
     if(!attr(dat, "estavel")) {
         stop("'dat' ainda nao passou pelo filtro de vazoes estaveis -- use polijus::filtravazest")

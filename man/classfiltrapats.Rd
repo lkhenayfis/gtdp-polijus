@@ -4,7 +4,7 @@
 \alias{classfiltrapats}
 \title{Avaliação de patamares}
 \usage{
-classfiltrapats(dat, tol = c(3, 2, 1.15), plot.dir)
+classfiltrapats(dat, tol = c(3, 2, 1.25), plot.dir)
 }
 \arguments{
 \item{dat}{objeto do tipo \code{datpoli} para classificar}
