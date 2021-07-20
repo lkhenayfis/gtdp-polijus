@@ -27,7 +27,7 @@
 
 classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
-    if(!attr(dat, "estavel")) {
+    if(!attr(dat, "filtravazest")) {
         stop("'dat' ainda nao passou pelo filtro de vazoes estaveis -- use polijus::filtravazest")
     }
 
@@ -43,7 +43,7 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
     dat$hist_est <- hist_est
     dat$patinfo  <- filtros
-    attr(dat, "classificado") <- TRUE
+    attr(dat, "classfiltrapats") <- TRUE
 
     if(!missing(plot.dir)) {
         if(plot.dir == "auto") {

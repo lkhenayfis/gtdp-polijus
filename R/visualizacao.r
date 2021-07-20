@@ -76,12 +76,12 @@ plota_datfull <- function(dat, qual) {
     qual <- strsplit(qual, "\\+")[[1]]
 
     # tira estavel ou filtrado de qual se o dado ainda nao passou por essas fases
-    if(!attr(dat, "estavel") & ("estaveis" %in% qual)) {
+    if(!attr(dat, "filtravazest") & ("estaveis" %in% qual)) {
         qual <- qual[!grepl("estaveis", qual)]
         warning(paste0("'qual' inclui dados de vazao estaveis, porem esta avaliacao ainda nao foi realizada",
             "\n Use polijus::filtravazest"))
     }
-    if(!attr(dat, "classificado") & ("filtrados" %in% qual)) {
+    if(!attr(dat, "classfiltrapats") & ("filtrados" %in% qual)) {
         qual <- qual[!grepl("filtrados", qual)]
         warning(paste0("'qual' inclui dados filtrados, porem esta avaliacao ainda nao foi realizada",
             "\n Use polijus::classfiltrapats"))
@@ -164,7 +164,7 @@ plota_remanso <- function(dat, ...) {
 
 plota_patfiltro <- function(dat, qual) {
 
-    if(!attr(dat, "classificado")) {
+    if(!attr(dat, "classfiltrapats")) {
         stop(paste0("'qual' se refere aos dados de um patamar especifico, porem a classificacao ainda",
             " nao foi realizada", "\n Use polijus::classfiltrapats"))
     }
@@ -190,7 +190,7 @@ plota_patfiltro <- function(dat, qual) {
 
 plota_patconv <- function(dat, qual) {
 
-    if(!attr(dat, "remanso")) {
+    if(!attr(dat, "evalremanso")) {
         stop(paste0("'qual' se refere a convergencia entre dois patamares, porem esta analise ainda",
             " nao foi realizada", "\n Use polijus::evalremanso"))
     }

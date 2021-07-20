@@ -113,7 +113,7 @@ filtravazest <- function(dat, n = 6, tol = .05) {
 
     # Compoe saida
     dat$hist_est <- hist_est[, .SD, .SDcols = 2:6]
-    attr(dat, "estavel") <- TRUE
+    attr(dat, "filtravazest") <- TRUE
 
     return(dat)
 }
