@@ -1,11 +1,27 @@
 ############################ FUNCOES PARA AVALIACAO DO EFEITO DE REMANSO ###########################
 
+#' Avaliacao do efeito de remanso
+#' 
+#' Identifica quais patamares sofrem influencia parcial ou completa do reservatorio a jusante
+#' 
+#' //TODO explicar melhor o processo de avaliacao de remanso
+#' 
+#' @param dat objeto do tipo \code{datpoli} ja classificado no qual avaliar remanso
+#' @param tol tolerancia minima para consideracao de convergencia entre dois patamares. Ver Detalhes
+#' @param step separacao entre patamares para testar covergencia. Ver Detalhes
+#' 
+#' @return objeto \code{datpoli} contendo item \code{infopats} preenchido com vazoes de convergencia
+#' 
+#' @export 
+
 evalremanso <- function(dat, tol = .05, step = 2) {
 
     patamares <- sort(unique(dat$hist_est$pat))
 
     # Heuristica para consideracao de convergencia imediata dos patamares
     vazmin <- quantile(dat$hist_est[, vazao], .05) + diff(quantile(dat$hist_est[, vazao], c(.05, 1))) / 25
+
+    # ANALISE DE CONVERGENCIA
 
     converg <- lapply(seq(patamares)[-c(1:step)], function(i) {
 
@@ -20,8 +36,10 @@ evalremanso <- function(dat, tol = .05, step = 2) {
         c(pat, as.list(conv))
     })
 
-    # Para identificacao da ausencia de influencia de remanso, um dos tentes e verificar se
-    # o maior paramar esta significativamente abaixo do menor nivel de jusante da usina em questao
+    # ANALISE DE PRESENCA DE REMANSO
+
+    # Para identificacao da ausencia de influencia de remanso, um dos testes e verificar se
+    # o maior patamar esta significativamente abaixo do menor nivel de jusante da usina em questao
     # Este "significativamente" varia caso a caso, de modo que e necessaria uma heuristica geral
     # para realizacao deste teste
     attach(dat)
@@ -33,6 +51,22 @@ evalremanso <- function(dat, tol = .05, step = 2) {
     detach(dat)
 
     semremanso <- achasemremanso(dat, vazmin, limjus)
+
+    dat$patinfo <- mapply(dat$patinfo, semremanso, SIMPLIFY = FALSE, FUN = function(info, srms) {
+        c(info, list(remanso = !srms))
+    })
+
+    # REGULARIZACAO DAS VAZOES DE CONVERGENCIA
+
+    vazconvreg <- tratavazconv(dat)
+    dat$patinfo <- mapply(dat$patinfo, vazconvreg, SIMPLIFY = FALSE, FUN = function(info, vcr) {
+        c(info, list(vazconv_reg = vcr))
+    })
+
+    attr(dat, "step_converg") <- step
+    attr(dat, "evalremanso") <- TRUE
+
+    return(dat)
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
@@ -118,15 +152,19 @@ achasemremanso <- function(dat, vazmin, limjus) {
 
     v_convimed <- sapply(dat$patinfo, "[[", "convimed") == 1
 
-    if(tail(pats, 1) < limjus + 3) {
+    # Outra heuristica para esse corte brusco e o - 3, significando um nivel maximo do reserv a 
+    # jusante muito menor que o minimo nivel de jusante da usina analisada
+    if(tail(pats, 1) < limjus - 3) {
 
         # Caso limjus seja muito maior que os patamares, assume que todos sao sem remanso
-        out <- pats < limjus + 1
+        out <- rep(TRUE, length(pats))
 
         return(out)
 
     } else {
 
+        # Do contrario, considera que todos os patamares menores ou no entorno de limjus sao sem 
+        # remanso de cara
         semrmns <- pats < (limjus + 1)
 
         # Determina convergem no inicio do dominio
@@ -141,8 +179,8 @@ achasemremanso <- function(dat, vazmin, limjus) {
             m <- tail(dat$patinfo[[i]]$tend, 1)[[1]]
 
             # Amostra valores no inicio do dominio e calcula segunda derivada
-            v_x <- seq(min(d$vazao), vazmin, length.out = 300)
-            v_y <- predict(m, newdata = data.frame(VAZ = v_x))
+            v_x <- seq(d[valido == TRUE, min(vazao)], vazmin, length.out = 300)
+            v_y <- predict(m, newdata = data.frame(vazao = v_x))
             v_d1 <- (v_y[-1]  - v_y[-length(v_y)]) / diff(v_x)[1]
             v_d2 <- (v_d1[-1] - v_d1[-length(v_d1)]) / diff(v_x)[1]
 
@@ -160,4 +198,25 @@ achasemremanso <- function(dat, vazmin, limjus) {
 
 tratavazconv <- function(dat) {
 
+    patremns <- sapply(dat$patinfo, "[[", "remanso")
+
+    out      <- sapply(dat$patinfo, "[[", "vazconv")
+    vazconv <- out[patremns]
+
+    # Corrige as convergencias para que sejam sempre crescentes
+    for(i in seq(vazconv)) {
+
+        if(is.na(vazconv[i])) next
+
+        ultvazconv <- vazconv[1:(i - 1)]
+
+        ultvazconv <- max(ultvazconv, na.rm = TRUE)
+
+        # Testa se foi possivel achar tal vazao e, caso positivo, garante que aquela em questao e >=
+        if((length(ultvazconv) != 0) && (vazconv[i] < ultvazconv)) vazconv[i] <- ultvazconv
+    }
+
+    out[patremns] <- vazconv
+
+    return(out)
 }
