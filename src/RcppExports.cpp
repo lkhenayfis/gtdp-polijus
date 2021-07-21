@@ -6,21 +6,22 @@
 using namespace Rcpp;
 
 // predictCpp2
-NumericVector predictCpp2(NumericVector& xData, NumericVector& yData, NumericVector xPred);
-RcppExport SEXP _polijus_predictCpp2(SEXP xDataSEXP, SEXP yDataSEXP, SEXP xPredSEXP) {
+NumericVector predictCpp2(NumericVector& xData, NumericVector& yData, NumericVector xPred, int nExtrap);
+RcppExport SEXP _polijus_predictCpp2(SEXP xDataSEXP, SEXP yDataSEXP, SEXP xPredSEXP, SEXP nExtrapSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector& >::type xData(xDataSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type yData(yDataSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type xPred(xPredSEXP);
-    rcpp_result_gen = Rcpp::wrap(predictCpp2(xData, yData, xPred));
+    Rcpp::traits::input_parameter< int >::type nExtrap(nExtrapSEXP);
+    rcpp_result_gen = Rcpp::wrap(predictCpp2(xData, yData, xPred, nExtrap));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_polijus_predictCpp2", (DL_FUNC) &_polijus_predictCpp2, 3},
+    {"_polijus_predictCpp2", (DL_FUNC) &_polijus_predictCpp2, 4},
     {NULL, NULL, 0}
 };
 
