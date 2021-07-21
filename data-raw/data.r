@@ -43,10 +43,13 @@ usethis::use_data(HIDR, VAZMAX, internal = TRUE, overwrite = TRUE)
 
 ##################################### DADOS EXTERNOS DO PACOTE #####################################
 
-# EXEMPLO DE PLANILHA IMPORTADA --------------------------------------------------------------------
+# EXEMPLO DE PLANILHA IMPORTADA E TRATADA ----------------------------------------------------------
 
 path <- system.file("extdata", "dummydata.xlsx", package = "polijus")
 
 dummydata <- importadados(path)
+dummydata <- filtravazest(dummydata)
+dummydata <- classfiltrapats(dummydata)
+dummydata <- evalremanso(dummydata)
 
 usethis::use_data(dummydata, overwrite = TRUE)
