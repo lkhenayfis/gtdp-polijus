@@ -73,9 +73,10 @@ plot.datcurvabase <- function(dbase, datorig, ...) {
 
     dplot1 <- dbase[[1]]
     if(!missing("datorig")) {
-        ranges1 <- list(range(datorig[[1]]$vazao, na.rm = TRUE), range(datorig[[1]]$njus, na.rm = TRUE))
+        ranges1 <- datorig[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+        ranges1 <- as.list(ranges1)
 
-        aux <- datorig[[2]][!(datahora %in% dplot1$datahora)]
+        aux <- datorig[[2]][!(datahora %in% dplot1$datahora) & (valido == TRUE)]
         aux[, base := FALSE]
     } else {
         ranges1 <- list(range(dbase[[1]]$vazao, na.rm = TRUE), range(dbase[[1]]$njus, na.rm = TRUE))
@@ -120,7 +121,8 @@ plot.datcurvabase <- function(dbase, datorig, ...) {
 
 plota_datfull <- function(dat, qual) {
 
-    ranges <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
+    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- as.list(ranges)
 
     qual <- strsplit(qual, "\\+")[[1]]
 
@@ -177,7 +179,8 @@ plota_remanso <- function(dat, ...) {
             " nao foi realizada", "\n Use polijus::evalremanso"))
     }
 
-    ranges   <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
+    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- as.list(ranges)
 
     remanso <- sapply(dat$patinfo, "[[", "remanso")
     vazconv <- sapply(dat$patinfo, "[[", "vazconv")
@@ -220,7 +223,8 @@ plota_patfiltro <- function(dat, qual) {
             " nao foi realizada", "\n Use polijus::classfiltrapats"))
     }
 
-    ranges <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
+    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- as.list(ranges)
 
     qual <- sub("pat_", "", qual)
 
@@ -246,7 +250,8 @@ plota_patconv <- function(dat, qual) {
             " nao foi realizada", "\n Use polijus::evalremanso"))
     }
 
-    ranges <- list(range(dat[[1]]$vazao, na.rm = TRUE), range(dat[[1]]$njus, na.rm = TRUE))
+    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- as.list(ranges)
 
     patamares <- sort(unique(dat$hist_est$pat))
 
