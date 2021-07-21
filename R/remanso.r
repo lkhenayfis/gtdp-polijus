@@ -32,8 +32,10 @@ evalremanso <- function(dat, tol = .05, step = 2) {
     })
     converg <- c(lapply(seq(step), function(x) c(vazconv = NA, convimed = NA)), converg)
 
-    dat$patinfo <- mapply(dat$patinfo, converg, SIMPLIFY = FALSE, FUN = function(pat, conv) {
-        c(pat, as.list(conv))
+    dat$patinfo <- mapply(dat$patinfo, converg, SIMPLIFY = FALSE, FUN = function(info, conv) {
+        info$vazconv  <- conv[1]
+        info$convimed <- conv[2]
+        info
     })
 
     # ANALISE DE PRESENCA DE REMANSO
@@ -53,14 +55,16 @@ evalremanso <- function(dat, tol = .05, step = 2) {
     semremanso <- achasemremanso(dat, vazmin, limjus)
 
     dat$patinfo <- mapply(dat$patinfo, semremanso, SIMPLIFY = FALSE, FUN = function(info, srms) {
-        c(info, list(remanso = !srms))
+        info$remanso <- !srms
+        info
     })
 
     # REGULARIZACAO DAS VAZOES DE CONVERGENCIA
 
     vazconvreg <- tratavazconv(dat)
     dat$patinfo <- mapply(dat$patinfo, vazconvreg, SIMPLIFY = FALSE, FUN = function(info, vcr) {
-        c(info, list(vazconv_reg = vcr))
+        info$vazconv_reg <- vcr
+        info
     })
 
     attr(dat, "step_converg") <- step
