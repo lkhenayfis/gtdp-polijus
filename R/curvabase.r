@@ -108,7 +108,7 @@ extraplog <- function(dbase, tol = 1e-5) {
     njus  <- predict(reg, newdata = data.frame(vazao = vazao))
     out   <- data.table(vazao = exp(vazao), njus = exp(njus))
 
-    dbase[[2]] <- c(dbase[[2]], list(EXTRAP = out))
+    dbase[[2]]$EXTRAP <- out
 
     return(dbase)
 }
