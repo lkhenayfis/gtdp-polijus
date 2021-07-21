@@ -154,7 +154,7 @@ achasemremanso <- function(dat, vazmin, limjus) {
 
     # Outra heuristica para esse corte brusco e o - 3, significando um nivel maximo do reserv a 
     # jusante muito menor que o minimo nivel de jusante da usina analisada
-    if(tail(pats, 1) < limjus - 3) {
+    if(tail(as.numeric(pats), 1) < limjus - 3) {
 
         # Caso limjus seja muito maior que os patamares, assume que todos sao sem remanso
         out <- rep(TRUE, length(pats))
@@ -165,7 +165,7 @@ achasemremanso <- function(dat, vazmin, limjus) {
 
         # Do contrario, considera que todos os patamares menores ou no entorno de limjus sao sem 
         # remanso de cara
-        semrmns <- pats < (limjus + 1)
+        semrmns <- as.numeric(pats) < (limjus + 1)
 
         # Determina convergem no inicio do dominio
         semrmns <- v_convimed & semrmns
