@@ -27,6 +27,7 @@ dummy[, 3] <- 34
 dummy[, 4] <- 1 / 1400
 
 HIDR <- rbind(HIDR, dummy)
+setDT(HIDR)
 
 # VAZOES MAXIMAS PARA EXTENSAO ---------------------------------------------------------------------
 
