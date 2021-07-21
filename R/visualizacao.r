@@ -101,6 +101,8 @@ plota_datfull <- function(dat, qual) {
     } else if("estaveis" %in% qual) {
         dplot[[2]] <- dplot[[2]][, .SD, .SDcols = c("vazao", "njus", "valido")]
         dplot[[2]][, tipo := "estaveis"]
+    } else {
+        dplot[[2]] <- NULL
     }
 
     dplot <- rbindlist(dplot)
