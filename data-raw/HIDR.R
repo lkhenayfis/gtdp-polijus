@@ -1,6 +1,8 @@
 devtools::load_all()
 
-########################## Preparo do hidr **COM CADASTRO ANTIGO**
+##################################### DADOS INTERNOS DO PACOTE #####################################
+
+# Preparo do hidr **COM CADASTRO ANTIGO** ----------------------------------------------------------
 
 HIDR <- read.csv("data-raw/HIDR.csv", fill = TRUE, sep = ";", dec = ",", stringsAsFactors = FALSE)
 
@@ -26,31 +28,22 @@ dummy[, 4] <- 1 / 1400
 
 HIDR <- rbind(HIDR, dummy)
 
-########################## VAZOES MAXIMAS PARA AJUSTE 
+# VAZOES MAXIMAS PARA EXTENSAO ---------------------------------------------------------------------
 
-path <- "X:/Ciclo 1 - 2005 a 2014/_Resultados Finais por Usina"
-dirs <- list.dirs(path, full.names = TRUE, recursive = FALSE)
-dirs <- paste0(dirs, "/Niveis de Jusante")
-arqs <- file.path(dirs, "Resultados/img.RData")
+arq <- "X:/Ciclo 2 - 2010 a 2019/Dados recebidos/_EPE/Vazoes Maximas Historicas 1931-2018.xlsx"
+VAZMAX <- readxl::read_xlsx(arq)[, -2]
+setDT(VAZMAX)
+colnames(VAZMAX) <- c("USI", "VAZMAX")
+setorder(VAZMAX, USI)
 
-temresultado <- file.exists(arqs)
-arqs <- arqs[temresultado]
-arqs <- sub("img.RData", "CoefBase.csv", arqs)
 
-VAZMAX <- lapply(arqs, function(arq) {
-
-    VAZMAX <- read.csv(arq)
-    VAZMAX <- tail(VAZMAX[, 2], 1)
-    cod    <-  read.table(sub("Niveis .*", "CodUsi.txt", arq))[1, 1]
-    data.frame(USI = cod, VAZMAX = VAZMAX)
-})
-
-VAZMAX <- do.call(rbind, VAZMAX)
-VAZMAX <- VAZMAX[order(VAZMAX[, 1]), ]
+# ESCRITA DOS DADOS INTERNOS -----------------------------------------------------------------------
 
 usethis::use_data(HIDR, VAZMAX, internal = TRUE, overwrite = TRUE)
 
-########################## EXEMPLO DE DADO IMPORTADO
+##################################### DADOS EXTERNOS DO PACOTE #####################################
+
+# EXEMPLO DE PLANILHA IMPORTADA --------------------------------------------------------------------
 
 path <- system.file("extdata", "dummydata.xlsx", package = "polijus")
 
