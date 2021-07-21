@@ -26,7 +26,7 @@
 #' fornecido no formato \code{"pat_XXX.X"}. Nesta situação serão plotados apenas os dados referentes
 #' ao patamar \code{XXX.X} colorido para indicar aqueles que foram removido ao longo da filtragem.
 #' 
-#' @param dat objeto \code{datpolo}
+#' @param dat objeto \code{datpoli}
 #' @param qual string indicando o que deve ser plotado. Ver Detalhes
 #' 
 #' @return plot das informações requisitadas em \code{qual}
@@ -65,6 +65,55 @@ plot.datpoli <- function(dat, qual, ...) {
     if(grepl("^remanso$", qual)) plot_func <- plota_remanso
 
     plot_func(dat, qual)
+}
+
+#' @export
+
+plot.datcurvabase <- function(dbase, datorig, ...) {
+
+    dplot1 <- dbase[[1]]
+    if(!missing("datorig")) {
+        ranges1 <- list(range(datorig[[1]]$vazao, na.rm = TRUE), range(datorig[[1]]$njus, na.rm = TRUE))
+
+        aux <- datorig[[2]][!(datahora %in% dplot1$datahora)]
+        aux[, base := FALSE]
+    } else {
+        ranges1 <- list(range(dbase[[1]]$vazao, na.rm = TRUE), range(dbase[[1]]$njus, na.rm = TRUE))
+        aux <- NULL
+    }
+    dplot1 <- rbind(aux, dplot1)
+    cores1 <- ifelse(dplot1$base, "green4", "deepskyblue2")
+
+    dplot2   <- dbase[[2]]
+    nquadros <- ceiling(length(dplot2) / 2) * 2
+    ranges2  <- list(c(min(dplot1$vazao), max(dplot2[[1]]$vazao)),
+                     c(min(dplot1$njus), max(sapply(dplot2, function(d) max(d$njus)))))
+
+    quadros <- matrix(c(rep(1, nquadros), seq(nquadros) + 1), ncol = 4)
+
+    dev.new(width = 30, height = 18)
+    layout(quadros)
+    par(cex.axis = 1.5, cex.lab = 1.5, cex.main = 1.7)
+    par(mar = c(5.1, 6.1, 4.1, 2.1))
+    plot(dplot1$vazao, dplot1$njus, panel.first = grid(col = "grey85"), col = cores1, pch = 16,
+        xlim = ranges1[[1]], ylim = ranges1[[2]],
+        xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]")
+    legend("bottomright", inset = .02, title = "Dados ", cex = 1.5,
+        legend = c("históricos", "curva base"), pch = 16,
+        col = c("deepskyblue2", "green4"))
+
+    par(mar = c(5.1, 1, 4.1, 1))
+    for(ext in names(dplot2)) {
+        plot(dplot1[base == TRUE]$vazao, dplot1[base == TRUE]$njus, panel.first = grid(col = "grey85"),
+            col = "green4", pch = 16,
+            xlim = ranges2[[1]], ylim = ranges2[[2]],
+            xlab = "", ylab = "", xaxt = "n", yaxt = "n",
+            main = paste0("Extensao via: ", ext))
+        lines(dplot2[[ext]][, c("vazao", "njus")], lwd = 3, lty = 2, col = "green4")
+    }
+    legend("bottomright", inset = .02, cex = 1.5,
+        legend = c("Curva base", "extensão"), pch = c(16, NA), lty = c(NA, 2), lwd = c(NA, 3),
+        col = "green4")
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
@@ -149,7 +198,7 @@ plota_remanso <- function(dat, ...) {
 
     layout(matrix(c(1, 2), 2, 1))
     plot(dplot$vazao, dplot$njus, pnael.first = grid(col = "grey85"),
-        col = ifelse(dplot$temremanso, "deepskyblue2", "green4"),
+        col = ifelse(dplot$temremanso, "deepskyblue2", "green4"), pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
         xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]",
         main = "Dispersão do efeito de remanso no histórico equivalente filtrado")
