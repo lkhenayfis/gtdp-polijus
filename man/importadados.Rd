@@ -22,7 +22,7 @@ de arquivos será aberta para busca e seleção}
 
 \item{ext}{lista de funções para extensão do dado histórico. Ver Detalhes}
 
-\item{dat}{objeto \code{datpolo}}
+\item{dat}{objeto \code{datpoli}}
 
 \item{qual}{string indicando o que deve ser plotado. Ver Detalhes}
 }
