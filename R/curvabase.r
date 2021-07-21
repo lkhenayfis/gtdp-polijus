@@ -42,7 +42,7 @@ extraibase <- function(dat, subset = NULL) {
             dbase[(pat == p) & (vazao > vazconv[p]), base := TRUE]
         }
 
-        dbase <- dbase[base == TRUE]
+        dbase <- dbase[(valido == TRUE) & (base == TRUE)]
     }
 
     maxvaz    <- max(3 * dbase$vazao, attr(dat, "vazmax"))
