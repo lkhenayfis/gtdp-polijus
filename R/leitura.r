@@ -116,7 +116,9 @@ new_datpoli <- function(path, cod, hist, ext) {
 
     vazmax <- VAZMAX[USI == cod, VAZMAX]
 
-    coef <- unlist(HIDR[HIDR$USI == cod, c(3:7)])
+    vazef <- unlist(HIDR[USI == cod, VAZEF])
+
+    coef <- unlist(HIDR[USI == cod, c(3:7)])
     fun  <- function(x) coef[1] + coef[2] * x + coef[3] * x^2 + coef[4] * x^3 + coef[5] * x^4
     ext  <- c(list(CAD = fun), ext)
 
@@ -125,6 +127,7 @@ new_datpoli <- function(path, cod, hist, ext) {
 
     attr(new, "path")  <- path
     attr(new, "cod")   <- cod
+    attr(new, "vazef") <- vazef
     attr(new, "vazmax") <- vazmax
     attr(new, "filtravazest") <- FALSE
     attr(new, "classfiltrapats") <- FALSE
