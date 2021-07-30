@@ -53,6 +53,7 @@ extraibase <- function(dat, subset = NULL) {
 
     dbase <- list(hist = dbase, ext = lextrap)
     class(dbase) <- "datcurvabase"
+    attr(dbase, "vazzero") <- 0
 
     return(dbase)
 }
@@ -111,4 +112,50 @@ extraplog <- function(dbase, tol = 1e-5) {
     dbase[[2]]$EXTRAP <- out
 
     return(dbase)
+}
+
+# HELPERS ------------------------------------------------------------------------------------------
+
+#' @export
+
+copy.datcurvavase <- function(dat) {
+    out <- list(hist = NULL, ext = NULL)
+    out$hist <- copy(dat$hist)
+    out$ext  <- lapply(dat$ext, copy)
+    return(out)
+}
+
+#' @export
+
+scale.datcurvabase <- function(dat, center = TRUE, scale = TRUE) {
+
+    if(center) {
+        medias <- sapply(c("vazao", "njus"), function(col) {
+            vhist <- dat[[1]][[col]]
+            lext  <- lapply(dat[[2]], function(ext) ext[[col]])
+            mean(c(vhist, unlist(lext)))
+        })
+
+        dat$hist[, 3:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 3:2]
+        lapply(dat$ext, function(d) {
+            d[, 1:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 1:2]
+            invisible(NULL)
+        })
+    }
+
+    if(scale) {
+        sds <- sapply(c("vazao", "njus"), function(col) {
+            vhist <- dat[[1]][[col]]
+            lext  <- lapply(dat[[2]], function(ext) ext[[col]])
+            sd(c(vhist, unlist(lext)))
+        })
+
+        dat$hist[, 3:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 3:2]
+        lapply(dat$ext, function(d) {
+            d[, 1:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 1:2]
+            invisible(NULL)
+        })
+    }
+
+    return(list(medias, sds))
 }
