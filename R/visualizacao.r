@@ -69,7 +69,7 @@ plot.datpoli <- function(dat, qual, ...) {
 
 #' @export
 
-plot.datcurvabase <- function(dbase, datorig, ...) {
+plot.datcbase <- function(dbase, datorig, ...) {
 
     dplot1 <- dbase[[1]]
     if(!missing("datorig")) {

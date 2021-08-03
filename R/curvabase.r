@@ -17,7 +17,7 @@
 #' @param subset opcional -- vetor de inteiros ou lógico indicando as posições do dado estável para
 #'     usar na curva base. Ver Detalhes
 #' 
-#' @return objeto \code{datcurvabase} -- lista de dois elementos:
+#' @return objeto \code{datcbase} -- lista de dois elementos:
 #'     \itemize{
 #'         \item no primeiro está a parte do dado histórico utilizada para curva base
 #'         \item no segundo uma lista de alternativas de dados para extensão do ajuste
@@ -52,7 +52,7 @@ extraibase <- function(dat, subset = NULL) {
     })
 
     dbase <- list(hist = dbase, ext = lextrap)
-    class(dbase) <- "datcurvabase"
+    class(dbase) <- "datcbase"
     attr(dbase, "vazzero") <- 0
 
     return(dbase)
@@ -64,8 +64,8 @@ extraibase <- function(dat, subset = NULL) {
 
 extraplog <- function(dbase, tol = 1e-5) {
 
-    if(!class(dbase) == "datcurvabase") {
-        stop(paste0("dbase fornecido nao tem classe 'datcurvabase' -- ",
+    if(!class(dbase) == "datcbase") {
+        stop(paste0("dbase fornecido nao tem classe 'datcbase' -- ",
             "Use polijus::extrabase para obter o dado corretamente"))
     }
 
@@ -127,7 +127,7 @@ copy.datcurvavase <- function(dat) {
 
 #' @export
 
-scale.datcurvabase <- function(dat, center = TRUE, scale = TRUE) {
+scale.datcbase <- function(dat, center = TRUE, scale = TRUE) {
 
     if(center) {
         medias <- sapply(c("vazao", "njus"), function(col) {

@@ -13,7 +13,7 @@ extraibase(dat, subset = NULL)
 usar na curva base. Ver Detalhes}
 }
 \value{
-objeto \code{datcurvabase} -- lista de dois elementos:
+objeto \code{datcbase} -- lista de dois elementos:
 \itemize{
 \item no primeiro está a parte do dado histórico utilizada para curva base
 \item no segundo uma lista de alternativas de dados para extensão do ajuste
