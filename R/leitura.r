@@ -139,7 +139,17 @@ new_datpoli <- function(path, cod, hist, ext) {
 
 #' @export
 
-print.datpoli <- function(dat) print(dat$hist)
+print.datpoli <- function(dat) {
+
+    attrs   <- c("filtravazest", "classfiltrapats", "evalremanso")
+    tipo    <- sapply(attrs, attr, x = dat)
+    bullets <- c("Vazoes estaveis", "Classificacao e filtro por patamar", "Avaliacao de remanso")
+    names(bullets) <- ifelse(tipo, "v", "x")
+
+    cli::cli_h2(paste0("Usina: ", attr(dat, "cod")))
+    cli::cli_h3("Etapas realizadas")
+    cli::cli_bullets(bullets)
+}
 
 # HELPERS ------------------------------------------------------------------------------------------
 
