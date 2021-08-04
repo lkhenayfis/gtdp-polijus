@@ -33,8 +33,8 @@ evalremanso <- function(dat, tol = .05, step = 2) {
     converg <- c(lapply(seq(step), function(x) c(vazconv = NA, convimed = NA)), converg)
 
     dat$patinfo <- mapply(dat$patinfo, converg, SIMPLIFY = FALSE, FUN = function(info, conv) {
-        info$vazconv  <- conv[1]
-        info$convimed <- conv[2]
+        info$vazconv  <- unname(conv[1])
+        info$convimed <- unname(conv[2])
         info
     })
 
