@@ -1,14 +1,17 @@
 
 #' @export
 
-new_polijusU <- function(coefs, bounds, dat, vcov, tag) {
+new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
     if(!is.list(coefs)) {
         coefs <- list(poli1 = coefs)
     } else {
         names(coefs) <- paste0("poli", seq(length(coefs)))
     }
+    graus <- sapply(coefs, function(coef) length(coef) - 1)
     coefs <- lapply(coefs, function(coef) c(coef, double(5 - length(coef))))
+
+    npoli <- length(coefs)
 
     if(!is.list(bounds)) {
         bounds <- list(poli1 = bounds)
@@ -17,18 +20,29 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tag) {
     }
 
     dat$hist <- dat$hist[, c("vazao", "njus")]
-    model <- rbindlist(dat)
+    model  <- rbindlist(dat)
+    breaks <- unlist(bounds)
+    model[, poli := findInterval(vazao, breaks[!duplicated(breaks)], all.inside = TRUE)]
+    setorder(model, vazao)
 
-    if(is.null(vcov)) vcov <- matrix(0, 5, 5)
+    if(is.null(vcov)) vcov <- matrix(0, graus[1] + 1, graus[1] + 1)
+    nomes <- unlist(lapply(seq(npoli), function(i) paste0(i, "_", "A", 0:graus[i])))
+    dimnames(vcov) <- list(nomes, nomes)
 
-    out <- list(coefs = coefs, bounds = bounds, model = model, vcov = vcov)
-    attr(out, "npoli") <- length(coef)
+    nomes2 <- unlist(lapply(seq(npoli), function(i) paste0(i, "_", "A", 0:4)))
+    aux <- matrix(.0, 5 * npoli, 5 * npoli, dimnames = list(nomes2, nomes2))
+    aux[nomes, nomes] <- vcov
+
+    out <- list(coefs = coefs, bounds = bounds, model = model, vcov = aux)
+    attr(out, "npoli") <- npoli
 
     fitted <- fitted.polijusU(out)
 
     out$fitted <- fitted
 
-    attr(out, "tag") <- tag
+    attr(out, "graus") <- graus
+    attr(out, "tipo")  <- tipo
+    attr(out, "tag")   <- tag
     class(out) <- "polijusU"
 
     return(out)
@@ -72,8 +86,7 @@ fitted.polijusU <- function(polijus, ...) {
     coefs <- polijus$coefs
 
     fitted <- lapply(seq(npoli), function(i) {
-        bounds <- polijus$bounds[[i]]
-        vaz    <- polijus$model[vazao %between% bounds, vazao]
+        vaz    <- polijus$model[poli == i, vazao]
         coefI  <- coefs[[i]]
         fit    <- lapply(seq(coefI), function(i) vaz^(i - 1) * coefI[i])
 
@@ -133,8 +146,14 @@ rescale <- function(polijus, scales, inv = FALSE) {
 
         polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]))
         polijus$bounds <- lapply(seq(npoli), function(i) polijus$bounds[[i]] * sig[1] + mu[1])
-        polijus$model[, 1:2 := mapply(.SD, mu, sig, SIMPLIFY = FALSE, FUN = function(d, u, s) d * s + u)]
-        polijus$vcov   <- do.call(Matrix::bdiag, DELTA) %*% polijus$vcov %*% do.call(Matrix::bdiag, lapply(DELTA, t))
+        polijus$model[, 1:2 := mapply(.SD, mu, sig, SIMPLIFY = FALSE, FUN = function(d, u, s) d * s + u), .SDcols = 1:2]
+
+        bDELTA  <- as.matrix(do.call(Matrix::bdiag, DELTA))
+        bDELTAt <- as.matrix(do.call(Matrix::bdiag, lapply(DELTA, t)))
+        dn <- dimnames(polijus$vcov)
+        polijus$vcov <- bDELTA %*% polijus$vcov %*% bDELTAt
+        dimnames(polijus$vcov) <- dn
+
         polijus$fitted <- fitted(polijus)
 
     } else {
@@ -146,11 +165,17 @@ rescale <- function(polijus, scales, inv = FALSE) {
             })
         })
         d <- lapply(seq(npoli), function(i) c(-mu[2] / sig[2], double(4)))
-        
+
         polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]) / sig[2])
         polijus$bounds <- lapply(seq(npoli), function(i) (polijus$bounds[[i]] - mu[1]) / sig[1])
-        polijus$model[, 1:2 := mapply(.SD, mu, sig, SIMPLIFY = FALSE, FUN = function(d, u, s) (d - u) / s)]
-        polijus$vcov   <- do.call(Matrix::bdiag, DELTA) %*% polijus$vcov %*% do.call(Matrix::bdiag, lapply(DELTA, t))
+        polijus$model[, 1:2 := mapply(.SD, mu, sig, SIMPLIFY = FALSE, FUN = function(d, u, s) (d - u) / s), .SDcols = 1:2]
+
+        bDELTA  <- as.matrix(do.call(Matrix::bdiag, DELTA))
+        bDELTAt <- as.matrix(do.call(Matrix::bdiag, lapply(DELTA, t)))
+        dn <- dimnames(polijus$vcov)
+        polijus$vcov <- bDELTA %*% polijus$vcov %*% bDELTAt
+        dimnames(polijus$vcov) <- dn
+
         polijus$fitted <- fitted(polijus)
     }
 
