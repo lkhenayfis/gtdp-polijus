@@ -9,9 +9,13 @@ fitpoli <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) UseMethod("fi
 fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) {
 
     l_parse <- parseargsbase(dat, ext, graus, pto_turbmax, pto_ext)
-    call    <- l_parse[[1]]
+    l_func  <- l_parse[[1]]
     scales  <- l_parse[[2]]
 
+    out <- eval(do.call(call, l_func))
+    out <- rescale(out, scales)
+
+    return(out)
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
@@ -128,7 +132,7 @@ fit_baseH1 <- function(dat, graus, ...) {
     h <- matrix(rep(0, length(vazrestr)))
 
     coef   <- limSolve::lsei(A, b, E, f, G, h, fulloutput = TRUE)
-    bounds <- dat$hist[, range(vazao)]
+    bounds <- c(attr(dat, "vazzero"), dat$hist[, max(vazao)])
 
     new_polijusU(coef$X, bounds, dat, coef$covar, "curva base")
 }
