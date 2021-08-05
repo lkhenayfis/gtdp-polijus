@@ -8,5 +8,5 @@
 #' @useDynLib polijus
 #' @importFrom Rcpp sourceCpp
 #' 
-#' @import data.table
+#' @import data.table utils stats graphics grDevices
 NULL
