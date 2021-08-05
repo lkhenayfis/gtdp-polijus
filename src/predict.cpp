@@ -1,10 +1,21 @@
-#include <cmath>
 #include <Rcpp.h>
 
 using namespace Rcpp;
 using namespace std;
 
+//' Interpolador/extrpolador linear
+//'
+//' Função para interpolar ou extrapolar linearmente em um conjunto de dados
+//'
+//' @param xData absissas dos dados
+//' @param yData ordenadas dos dados
+//' @param xPred absissas para interpolar/extrapolar
+//' @param nExtrap número de observações utilizadas para extrapolação
+//'
+//' @return vetor numérico de dados interpolados/extrapolados
+//'
 //' @export
+//'
 // [[Rcpp::export]]
 NumericVector predictCpp2( NumericVector &xData, NumericVector &yData, NumericVector xPred, int nExtrap = 2)
 {
