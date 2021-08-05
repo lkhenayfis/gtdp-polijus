@@ -129,7 +129,7 @@ predict.polijusU <- function(object, newdata, ...) {
     return(predicted)
 }
 
-#' @export
+# HELPERS ------------------------------------------------------------------------------------------
 
 rescale <- function(polijus, scales, inv = FALSE) {
 
