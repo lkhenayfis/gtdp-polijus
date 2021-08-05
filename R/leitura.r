@@ -45,7 +45,7 @@ importadados <- function(path = NULL) {
     ext <- setDT(readxl::read_xlsx(path, sheet = "Extensao", col_types = "numeric", skip = 1))
     ext <- lapply(seq(ncol(ext))[c(TRUE, FALSE)], function(i) {
         cols <- c(i, i + 1)
-        out <- ext[, ..cols]
+        out <- ext[, .SD, .SDcols = cols]
         colnames(out) <- c("vazao", "njus")
         out
     })
@@ -111,6 +111,8 @@ importadados <- function(path = NULL) {
 
 new_datpoli <- function(path, cod, hist, ext) {
 
+    USI <- VAZEF <- NULL
+
     hist <- tratahist(hist)
     ext  <- trataext(ext)
 
@@ -155,6 +157,8 @@ print.datpoli <- function(dat) {
 
 tratahist <- function(hist) {
 
+    datahora <- data <- hora <- vazao <- njus <- nmont <- valido <- NULL
+
     if(!is.data.table(hist)) hist <- as.data.table(hist)
 
     colunas <- c("data", "hora", "njus", "vazao", "nmont", "valido")
@@ -170,7 +174,7 @@ tratahist <- function(hist) {
     if(!all(diff(hist$datahora) == 1)) stop("Ha datas faltantes no historico")
 
     colunas <- c("datahora", "njus", "vazao", "nmont", "valido")
-    hist <- hist[, ..colunas]
+    hist <- hist[, .SD, .SDcols = colunas]
 
     hist[vazao < 0, valido := FALSE]
     hist[njus < 0, valido := FALSE]

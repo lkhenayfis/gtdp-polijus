@@ -71,6 +71,8 @@ plot.datpoli <- function(dat, qual, ...) {
 
 plot.datcbase <- function(dbase, datorig, ...) {
 
+    datahora <- valido <- base <- NULL
+
     dplot1 <- dbase[[1]]
     if(!missing("datorig")) {
         ranges1 <- datorig[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
@@ -98,7 +100,7 @@ plot.datcbase <- function(dbase, datorig, ...) {
     par(mar = c(5.1, 6.1, 4.1, 2.1))
     plot(dplot1$vazao, dplot1$njus, panel.first = grid(col = "grey85"), col = cores1, pch = 16,
         xlim = ranges1[[1]], ylim = ranges1[[2]],
-        xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
     legend("bottomright", inset = .02, title = "Dados ", cex = 1.5,
         legend = c("históricos", "curva base"), pch = 16,
         col = c("deepskyblue2", "green4"))
@@ -120,6 +122,8 @@ plot.datcbase <- function(dbase, datorig, ...) {
 # HELPERS ------------------------------------------------------------------------------------------
 
 plota_datfull <- function(dat, qual) {
+
+    valido <- tipo <- NULL
 
     ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
     ranges <- as.list(ranges)
@@ -143,7 +147,7 @@ plota_datfull <- function(dat, qual) {
     colunas <- c("vazao", "njus", "valido", "tipo")
 
     dplot[[1]][, tipo := "brutos"]
-    dplot[[1]] <- dplot[[1]][, ..colunas]
+    dplot[[1]] <- dplot[[1]][, .SD, .SDcols = colunas]
 
     if(("filtrados" %in% qual)) {
         dplot[[2]] <- dplot[[2]][, .SD, .SDcols = c("vazao", "njus", "valido")]
@@ -166,13 +170,15 @@ plota_datfull <- function(dat, qual) {
 
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
     legend("bottomright", inset = .02, title = "Dados ",
         legend = sub("estaveis", "estáveis", qual), pch = 16,
         col = escala[qual])
 }
 
 plota_remanso <- function(dat, ...) {
+
+    vazao <- pat <- valido <- temremanso <- NULL
 
     if(!attr(dat, "evalremanso")) {
         stop(paste0("'qual' se refere ao efeito de remanso, porem esta analise ainda",
@@ -195,7 +201,7 @@ plota_remanso <- function(dat, ...) {
     }
     setorderv(dplot, "temremanso", -1)
 
-    dbar <- dplot[, .("com" = sum(temremanso), "sem" = sum(!temremanso)), by = pat]
+    dbar <- dplot[, list("com" = sum(temremanso), "sem" = sum(!temremanso)), by = pat]
     setorder(dbar, pat)
     dbar <- t(data.matrix(dbar))[-1, ]
 
@@ -203,7 +209,7 @@ plota_remanso <- function(dat, ...) {
     plot(dplot$vazao, dplot$njus, pnael.first = grid(col = "grey85"),
         col = ifelse(dplot$temremanso, "deepskyblue2", "green4"), pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]",
+        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]",
         main = "Dispersão do efeito de remanso no histórico equivalente filtrado")
 
     barplot(dbar, , xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = "white", border = NA)
@@ -218,6 +224,8 @@ plota_remanso <- function(dat, ...) {
 
 plota_patfiltro <- function(dat, qual) {
 
+    pat <- valido <- filtro <- cores <- NULL
+
     if(!attr(dat, "classfiltrapats")) {
         stop(paste0("'qual' se refere aos dados de um patamar especifico, porem a classificacao ainda",
             " nao foi realizada", "\n Use polijus::classfiltrapats"))
@@ -231,19 +239,18 @@ plota_patfiltro <- function(dat, qual) {
     dplot  <- copy(dat[[2]])[pat == qual]
     filtro <- dat$patinfo[[qual]]
 
-    vx <- seq(min(dplot$vazao), max(dplot$vazao), length.out = 500)
-    ly <- lapply(filtro[[1]], predict, newdata = data.frame(vazao = vx))
-
     escala <- c("deepskyblue2", "purple", "red", "orange", "yellow2")
     dplot[, filtro := filtro$filtro]
-    dplot[, cores := escala[filtro+ 1]]
+    dplot[, cores := escala[filtro + 1]]
 
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = dplot$cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
 }
 
 plota_patconv <- function(dat, qual) {
+
+    pat <- valido <- NULL
 
     if(!attr(dat, "evalremanso")) {
         stop(paste0("'qual' se refere a convergencia entre dois patamares, porem esta analise ainda",
@@ -276,7 +283,7 @@ plota_patconv <- function(dat, qual) {
 
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3*"/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
     for(i in seq(tends)) lines(tends[[i]]$vazao, tends[[i]]$njus, col = cores[i], lwd = 2)
     abline(v = vazconv, lwd = 2, lty = 2, col = "grey85")
     abline(v = vazconv_reg, lwd = 2, lty = 2, col = "black")

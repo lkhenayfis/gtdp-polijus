@@ -27,6 +27,8 @@
 
 extraibase <- function(dat, subset = NULL) {
 
+    vazao <- valido <- pat <- base <- NULL
+
     if(!missing("subset")) {
         dbase <- dat$hist_est[subset]
     } else {
@@ -72,7 +74,7 @@ extraplog <- function(dbase, tol = 1e-5) {
     dextrap <- copy(dbase[[1]])
     setorder(dextrap, vazao)
     dextrap <- dextrap[vazao > median(vazao)]
-    dextrap[, c("vazao", "njus") := .(log(vazao), log(njus))]
+    dextrap[, c("vazao", "njus") := list(log(vazao), log(njus))]
 
     vazhistmin <- min(log(dbase[[1]]$vazao))
 
@@ -94,7 +96,7 @@ extraplog <- function(dbase, tol = 1e-5) {
 
     plot(log(dbase$hist$vazao), log(dbase$hist$njus), col = "deepskyblue2", pch = 16,
         panel.first = grid(col = "grey85"),
-        xlab = expression("Log Vazão [m"^3*"/s]"), ylab = "Log Nível de jusante [m]",
+        xlab = expression("Log Vazão [m"^3 * "/s]"), ylab = "Log Nível de jusante [m]",
         main = "Região linear extrapolada")
     points(dextrap[vazao > vazi, c("vazao", "njus")], col = "purple3", pch = 16)
     abline(reg, lwd = 2)

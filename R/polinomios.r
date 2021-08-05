@@ -10,7 +10,7 @@ fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) {
 
     l_parse <- parseargsbase(dat, ext, graus, pto_turbmax, pto_ext)
     l_func  <- l_parse[[1]]
-    scales  <- l_parse[[2]]
+#    scales  <- l_parse[[2]]
 
     out <- eval(do.call(call, l_func))
 #    out <- rescale(out, scales)
@@ -122,6 +122,8 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
 fit_baseH1 <- function(dat, graus, ...) {
 
+    vazao <- njus <- NULL
+
     vazrestr <- seq(attr(dat, "vazzero"), max(dat$hist[, vazao]), length.out = 1000)
 
     A <- outer(dat$hist[, vazao], 0:graus[1], "^")
@@ -138,6 +140,8 @@ fit_baseH1 <- function(dat, graus, ...) {
 }
 
 fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
+
+    vazao <- njus <- NULL
 
     dat1 <- dat$hist[vazao <= pto_turbmax[1]]
 

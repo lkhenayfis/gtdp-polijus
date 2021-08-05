@@ -55,6 +55,8 @@
 
 filtravazest <- function(dat, n = 6, tol = .05) {
 
+    estavel <- NULL
+
     if(class(dat) != "datpoli") {
         stop("Parametro dat nao tem classe 'datpoli' -- Foi utilizada a funcao polijus::new_datpoli para contrui-lo?")
     }

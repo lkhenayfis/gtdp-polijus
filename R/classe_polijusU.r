@@ -3,6 +3,8 @@
 
 new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
+    vazao <- poli <- NULL
+
     if(!is.list(coefs)) {
         coefs <- list(poli1 = coefs)
     } else {
@@ -81,6 +83,8 @@ coef.polijusU <- function(polijus, ...) {
 
 fitted.polijusU <- function(polijus, ...) {
 
+    vazao <- poli <- NULL
+
     npoli <- attr(polijus, "npoli")
 
     coefs <- polijus$coefs
@@ -101,6 +105,8 @@ fitted.polijusU <- function(polijus, ...) {
 #' @export 
 
 predict.polijusU <- function(polijus, newdata, ...) {
+
+    vazao <- NULL
 
     setDT(newdata)
 
@@ -146,7 +152,8 @@ rescale <- function(polijus, scales, inv = FALSE) {
 
         polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]))
         polijus$bounds <- lapply(seq(npoli), function(i) polijus$bounds[[i]] * sig[1] + mu[1])
-        polijus$model[, 1:2 := mapply(.SD, mu, sig, SIMPLIFY = FALSE, FUN = function(d, u, s) d * s + u), .SDcols = 1:2]
+        polijus$model[, 1:2 := mapply(.SD, mu, sig, FUN = function(d, u, s) d * s + u,
+            SIMPLIFY = FALSE), .SDcols = 1:2]
 
         bDELTA  <- as.matrix(do.call(Matrix::bdiag, DELTA))
         bDELTAt <- as.matrix(do.call(Matrix::bdiag, lapply(DELTA, t)))
@@ -168,7 +175,8 @@ rescale <- function(polijus, scales, inv = FALSE) {
 
         polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]) / sig[2])
         polijus$bounds <- lapply(seq(npoli), function(i) (polijus$bounds[[i]] - mu[1]) / sig[1])
-        polijus$model[, 1:2 := mapply(.SD, mu, sig, SIMPLIFY = FALSE, FUN = function(d, u, s) (d - u) / s), .SDcols = 1:2]
+        polijus$model[, 1:2 := mapply(.SD, mu, sig, FUN = function(d, u, s) (d - u) / s,
+            SIMPLIFY = FALSE), .SDcols = 1:2]
 
         bDELTA  <- as.matrix(do.call(Matrix::bdiag, DELTA))
         bDELTAt <- as.matrix(do.call(Matrix::bdiag, lapply(DELTA, t)))

@@ -16,6 +16,8 @@
 
 evalremanso <- function(dat, tol = .05, step = 2) {
 
+    vazao <- njus <- NULL
+
     patamares <- sort(unique(dat$hist_est$pat))
 
     # Heuristica para consideracao de convergencia imediata dos patamares
@@ -44,13 +46,10 @@ evalremanso <- function(dat, tol = .05, step = 2) {
     # o maior patamar esta significativamente abaixo do menor nivel de jusante da usina em questao
     # Este "significativamente" varia caso a caso, de modo que e necessaria uma heuristica geral
     # para realizacao deste teste
-    attach(dat)
 
-    iqr    <- diff(range(quantile(hist_est[vazao < vazmin, njus], c(0.25, 0.75))))
-    limjus <- quantile(hist_est[vazao < vazmin, njus], 0.25) - 1.2*iqr
-    limjus <- min(hist_est[(vazao < vazmin) & (njus > limjus), njus])
-
-    detach(dat)
+    iqr    <- diff(range(quantile(dat$hist_est[vazao < vazmin, njus], c(0.25, 0.75))))
+    limjus <- quantile(dat$hist_est[vazao < vazmin, njus], 0.25) - 1.2 * iqr
+    limjus <- min(dat$hist_est[(vazao < vazmin) & (njus > limjus), njus])
 
     semremanso <- achasemremanso(dat, vazmin, limjus)
 
@@ -76,6 +75,8 @@ evalremanso <- function(dat, tol = .05, step = 2) {
 # HELPERS ------------------------------------------------------------------------------------------
 
 checaconv <- function(pat1, pat2, tol, vazmin, dat) {
+
+    pat <- valido <- NULL
 
     d1 <- dat$hist_est[(pat == pat1) & (valido == TRUE)]
     d2 <- dat$hist_est[(pat == pat2) & (valido == TRUE)]
@@ -138,8 +139,7 @@ checaconv <- function(pat1, pat2, tol, vazmin, dat) {
                 predx  <- predx[which(!diftol)[1]:length(diftol)]
                 diftol <- diftol[which(!diftol)[1]:length(diftol)]
 
-                tryCatch(
-                {
+                tryCatch({
                     predx  <- predx[which(diftol)[1]:length(diftol)]
                     diftol <- diftol[which(diftol)[1]:length(diftol)]
                 }, error = function(e) fim <<- TRUE)
@@ -152,11 +152,13 @@ checaconv <- function(pat1, pat2, tol, vazmin, dat) {
 
 achasemremanso <- function(dat, vazmin, limjus) {
 
+    vazao <- pat <- valido <- NULL
+
     pats <- sort(unique(dat$hist_est$pat))
 
     v_convimed <- sapply(dat$patinfo, "[[", "convimed") == 1
 
-    # Outra heuristica para esse corte brusco e o - 3, significando um nivel maximo do reserv a 
+    # Outra heuristica para esse corte brusco e o - 3, significando um nivel maximo do reserv a
     # jusante muito menor que o minimo nivel de jusante da usina analisada
     if(tail(as.numeric(pats), 1) < limjus - 3) {
 
@@ -167,7 +169,7 @@ achasemremanso <- function(dat, vazmin, limjus) {
 
     } else {
 
-        # Do contrario, considera que todos os patamares menores ou no entorno de limjus sao sem 
+        # Do contrario, considera que todos os patamares menores ou no entorno de limjus sao sem
         # remanso de cara
         semrmns <- as.numeric(pats) < (limjus + 1)
 
@@ -193,8 +195,8 @@ achasemremanso <- function(dat, vazmin, limjus) {
         }
 
         # Assume que todos os patamares abaixo do maior sem influencia de remanso tambem nao sofrem influencia
-        out <- cumsum(semrmns[length(semrmns):1])
-        out <- (out > 0)[length(semrmns):1]
+        out <- cumsum(semrmns[seq(length(semrmns), 1)])
+        out <- (out > 0)[seq(length(semrmns), 1)]
 
         return(out)
     }

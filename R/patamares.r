@@ -27,6 +27,8 @@
 
 classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
+    nmont <- NULL
+
     if(!attr(dat, "filtravazest")) {
         stop("'dat' ainda nao passou pelo filtro de vazoes estaveis -- use polijus::filtravazest")
     }
@@ -73,7 +75,8 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
 tratapats <- function(dpat, tol) {
 
-    patamar <- dpat$pat[1]
+    njus <- valido <- NULL
+
     size <- nrow(dpat)
 
     niveisj <- dpat$njus
