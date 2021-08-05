@@ -1,10 +1,15 @@
 Package: polijus
+Title: Pacote para desenvolvimento das curvas vazão-níveis de jusante pela metodologia do GTDP
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Lucas",
            family = "Khenayfis",
            role = c("aut", "cre"),
            email = "lkhenayfis@ons.org.br")
+Description: Este pacote contem o conjunto de funções necessárias para realização de todas as etapas
+    de ajuste das curvas vazão-nível de jusante definidas conforme metodologia estabelecida pelo 
+    GTDP. Além das necessárias para desenvolvimento da metodologia, diversas auxiliares para leitura
+    de dados, visualização de resultados e escrita de saídas são fornecidas.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
