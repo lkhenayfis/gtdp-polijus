@@ -100,9 +100,9 @@ plot.datcbase <- function(dbase, datorig, ...) {
     par(mar = c(5.1, 6.1, 4.1, 2.1))
     plot(dplot1$vazao, dplot1$njus, panel.first = grid(col = "grey85"), col = cores1, pch = 16,
         xlim = ranges1[[1]], ylim = ranges1[[2]],
-        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
     legend("bottomright", inset = .02, title = "Dados ", cex = 1.5,
-        legend = c("históricos", "curva base"), pch = 16,
+        legend = c("hist\u00F3ricos", "curva base"), pch = 16,
         col = c("deepskyblue2", "green4"))
 
     par(mar = c(5.1, 1, 4.1, 1))
@@ -111,11 +111,11 @@ plot.datcbase <- function(dbase, datorig, ...) {
             col = "green4", pch = 16,
             xlim = ranges2[[1]], ylim = ranges2[[2]],
             xlab = "", ylab = "", xaxt = "n", yaxt = "n",
-            main = paste0("Extensao via: ", ext))
+            main = paste0("Extens\u00E3o via: ", ext))
         lines(dplot2[[ext]][, c("vazao", "njus")], lwd = 3, lty = 2, col = "green4")
     }
     legend("bottomright", inset = .02, cex = 1.5,
-        legend = c("Curva base", "extensão"), pch = c(16, NA), lty = c(NA, 2), lwd = c(NA, 3),
+        legend = c("Curva base", "extens\u00E3o"), pch = c(16, NA), lty = c(NA, 2), lwd = c(NA, 3),
         col = "green4")
 }
 
@@ -170,9 +170,9 @@ plota_datfull <- function(dat, qual) {
 
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
     legend("bottomright", inset = .02, title = "Dados ",
-        legend = sub("estaveis", "estáveis", qual), pch = 16,
+        legend = sub("estaveis", "est\u00E1veis", qual), pch = 16,
         col = escala[qual])
 }
 
@@ -209,14 +209,14 @@ plota_remanso <- function(dat, ...) {
     plot(dplot$vazao, dplot$njus, pnael.first = grid(col = "grey85"),
         col = ifelse(dplot$temremanso, "deepskyblue2", "green4"), pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]",
-        main = "Dispersão do efeito de remanso no histórico equivalente filtrado")
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]",
+        main = "Dispers\u00E3o do efeito de remanso no hist\u00F3rico equivalente filtrado")
 
     barplot(dbar, , xaxt = "n", yaxt = "n", xlab = "", ylab = "", col = "white", border = NA)
     grid(nx = NA, ny = NULL)
     par(new = TRUE)
     barplot(dbar, col = c("deepskyblue2", "green4"), names.arg = sort(unique(dplot$pat)),
-        xlab = "Patamar", ylab = "Contagem", main  = "Número de registros por patamar")
+        xlab = "Patamar", ylab = "Contagem", main  = "N\u00FAmero de registros por patamar")
 
     legend("topleft", inset = 0.02, legend = c("Com remanso", "Sem remanso"),
         fill = c("deepskyblue2", "green4"))
@@ -245,7 +245,7 @@ plota_patfiltro <- function(dat, qual) {
 
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = dplot$cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
 }
 
 plota_patconv <- function(dat, qual) {
@@ -283,7 +283,7 @@ plota_patconv <- function(dat, qual) {
 
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
-        xlab = expression("Vazão [m"^3 * "/s]"), ylab = "Nível de jusante [m]")
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
     for(i in seq(tends)) lines(tends[[i]]$vazao, tends[[i]]$njus, col = cores[i], lwd = 2)
     abline(v = vazconv, lwd = 2, lty = 2, col = "grey85")
     abline(v = vazconv_reg, lwd = 2, lty = 2, col = "black")

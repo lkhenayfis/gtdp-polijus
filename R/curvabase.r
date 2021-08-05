@@ -96,12 +96,12 @@ extraplog <- function(dbase, tol = 1e-5) {
 
     plot(log(dbase$hist$vazao), log(dbase$hist$njus), col = "deepskyblue2", pch = 16,
         panel.first = grid(col = "grey85"),
-        xlab = expression("Log Vazão [m"^3 * "/s]"), ylab = "Log Nível de jusante [m]",
-        main = "Região linear extrapolada")
+        xlab = expression("Log Vaz\u00E3o [m"^3 * "/s]"), ylab = "Log N\u00EDvel de jusante [m]",
+        main = "Regi\u00E3o linear extrapolada")
     points(dextrap[vazao > vazi, c("vazao", "njus")], col = "purple3", pch = 16)
     abline(reg, lwd = 2)
     legend("bottomright", inset = 0.02,
-            legend = c("Dados históricos", "Região linear", "Ajuste linear"),
+            legend = c("Dados hist\u00F3ricos", "Regi\u00E3o linear", "Ajuste linear"),
             pch = c(16, 16, NA),
             lty = c(NA, NA, 1),
             lwd = c(NA, NA, 2),
