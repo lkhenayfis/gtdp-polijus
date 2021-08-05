@@ -10,7 +10,7 @@ importadados(path = NULL)
 
 new_datpoli(path, cod, hist, ext)
 
-\method{plot}{datpoli}(dat, qual, ...)
+\method{plot}{datpoli}(x, qual, ...)
 }
 \arguments{
 \item{path}{o caminho da planilha de entrada. Caso não seja fornecido, uma janela do explorador
@@ -22,7 +22,7 @@ de arquivos será aberta para busca e seleção}
 
 \item{ext}{lista de funções para extensão do dado histórico. Ver Detalhes}
 
-\item{dat}{objeto \code{datpoli}}
+\item{x}{objeto \code{datpoli}}
 
 \item{qual}{string indicando o que deve ser plotado. Ver Detalhes}
 }
@@ -120,15 +120,15 @@ new_datpoli(path = NULL, cod = 6, hist = d_hist, ext = l_ext)
 
 
 # detecta vazoes estaveis
-dat <- filtravazest(dummydata)
+x <- filtravazest(dummydata)
 
 # classifica e filtra por patamares
-dat <- classfiltrapats(dat)
+x <- classfiltrapats(x)
 
 # plot
-plot(dat, "todos") # dado completo
-plot(dat, "estaveis") # apenas aqueles em condicao estavel
-plot(dat, "pat_020.5") # plot de um patamar especifico
+plot(x, "todos") # dado completo
+plot(x, "estaveis") # apenas aqueles em condicao estavel
+plot(x, "pat_020.5") # plot de um patamar especifico
 
 \dontrun{
 

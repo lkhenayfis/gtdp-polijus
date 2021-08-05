@@ -26,7 +26,7 @@
 #' fornecido no formato \code{"pat_XXX.X"}. Nesta situação serão plotados apenas os dados referentes
 #' ao patamar \code{XXX.X} colorido para indicar aqueles que foram removido ao longo da filtragem.
 #' 
-#' @param dat objeto \code{datpoli}
+#' @param x objeto \code{datpoli}
 #' @param qual string indicando o que deve ser plotado. Ver Detalhes
 #' 
 #' @return plot das informações requisitadas em \code{qual}
@@ -34,15 +34,15 @@
 #' @examples 
 #' 
 #' # detecta vazoes estaveis
-#' dat <- filtravazest(dummydata)
+#' x <- filtravazest(dummydata)
 #' 
 #' # classifica e filtra por patamares
-#' dat <- classfiltrapats(dat)
+#' x <- classfiltrapats(x)
 #' 
 #' # plot
-#' plot(dat, "todos") # dado completo
-#' plot(dat, "estaveis") # apenas aqueles em condicao estavel
-#' plot(dat, "pat_020.5") # plot de um patamar especifico
+#' plot(x, "todos") # dado completo
+#' plot(x, "estaveis") # apenas aqueles em condicao estavel
+#' plot(x, "pat_020.5") # plot de um patamar especifico
 #' 
 #' \dontrun{
 #' 
@@ -54,7 +54,7 @@
 #' 
 #' @rdname importadados
 
-plot.datpoli <- function(dat, qual, ...) {
+plot.datpoli <- function(x, qual, ...) {
 
     if(missing(qual)) qual <- "brutos+estaveis+filtrados"
     if(qual == "todos") qual <- "brutos+estaveis+filtrados"
@@ -64,16 +64,16 @@ plot.datpoli <- function(dat, qual, ...) {
     if(grepl("^conv_", qual)) plot_func <- plota_patconv
     if(grepl("^remanso$", qual)) plot_func <- plota_remanso
 
-    plot_func(dat, qual)
+    plot_func(x, qual)
 }
 
 #' @export
 
-plot.datcbase <- function(dbase, datorig, ...) {
+plot.datcbase <- function(x, datorig, ...) {
 
     datahora <- valido <- base <- NULL
 
-    dplot1 <- dbase[[1]]
+    dplot1 <- x[[1]]
     if(!missing("datorig")) {
         ranges1 <- datorig[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
         ranges1 <- as.list(ranges1)
@@ -81,13 +81,13 @@ plot.datcbase <- function(dbase, datorig, ...) {
         aux <- datorig[[2]][!(datahora %in% dplot1$datahora) & (valido == TRUE)]
         aux[, base := FALSE]
     } else {
-        ranges1 <- list(range(dbase[[1]]$vazao, na.rm = TRUE), range(dbase[[1]]$njus, na.rm = TRUE))
+        ranges1 <- list(range(x[[1]]$vazao, na.rm = TRUE), range(x[[1]]$njus, na.rm = TRUE))
         aux <- NULL
     }
     dplot1 <- rbind(aux, dplot1)
     cores1 <- ifelse(dplot1$base, "green4", "deepskyblue2")
 
-    dplot2   <- dbase[[2]]
+    dplot2   <- x[[2]]
     nquadros <- ceiling(length(dplot2) / 2) * 2
     ranges2  <- list(c(min(dplot1$vazao), max(dplot2[[1]]$vazao)),
                      c(min(dplot1$njus), max(sapply(dplot2, function(d) max(d$njus)))))
@@ -121,29 +121,29 @@ plot.datcbase <- function(dbase, datorig, ...) {
 
 # HELPERS ------------------------------------------------------------------------------------------
 
-plota_datfull <- function(dat, qual) {
+plota_datfull <- function(x, qual) {
 
     valido <- tipo <- NULL
 
-    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- x[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
     ranges <- as.list(ranges)
 
     qual <- strsplit(qual, "\\+")[[1]]
 
     # tira estavel ou filtrado de qual se o dado ainda nao passou por essas fases
-    if(!attr(dat, "filtravazest") & ("estaveis" %in% qual)) {
+    if(!attr(x, "filtravazest") & ("estaveis" %in% qual)) {
         qual <- qual[!grepl("estaveis", qual)]
         warning(paste0("'qual' inclui dados de vazao estaveis, porem esta avaliacao ainda nao foi realizada",
             "\n Use polijus::filtravazest"))
     }
-    if(!attr(dat, "classfiltrapats") & ("filtrados" %in% qual)) {
+    if(!attr(x, "classfiltrapats") & ("filtrados" %in% qual)) {
         qual <- qual[!grepl("filtrados", qual)]
         warning(paste0("'qual' inclui dados filtrados, porem esta avaliacao ainda nao foi realizada",
             "\n Use polijus::classfiltrapats"))
     }
     if(length(qual) == 0) stop("Nao ha dados para plotar")
 
-    dplot <- list(copy(dat[[1]]), copy(dat[[2]]))
+    dplot <- list(copy(x[[1]]), copy(x[[2]]))
     colunas <- c("vazao", "njus", "valido", "tipo")
 
     dplot[[1]][, tipo := "brutos"]
@@ -176,22 +176,22 @@ plota_datfull <- function(dat, qual) {
         col = escala[qual])
 }
 
-plota_remanso <- function(dat, ...) {
+plota_remanso <- function(x, ...) {
 
     vazao <- pat <- valido <- temremanso <- NULL
 
-    if(!attr(dat, "evalremanso")) {
+    if(!attr(x, "evalremanso")) {
         stop(paste0("'qual' se refere ao efeito de remanso, porem esta analise ainda",
             " nao foi realizada", "\n Use polijus::evalremanso"))
     }
 
-    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- x[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
     ranges <- as.list(ranges)
 
-    remanso <- sapply(dat$patinfo, "[[", "remanso")
-    vazconv <- sapply(dat$patinfo, "[[", "vazconv")
+    remanso <- sapply(x$patinfo, "[[", "remanso")
+    vazconv <- sapply(x$patinfo, "[[", "vazconv")
 
-    dplot <- copy(dat$hist_est)
+    dplot <- copy(x$hist_est)
 
     # Dados sem efeito de remanso
     dplot[, temremanso := TRUE]
@@ -222,22 +222,22 @@ plota_remanso <- function(dat, ...) {
         fill = c("deepskyblue2", "green4"))
 }
 
-plota_patfiltro <- function(dat, qual) {
+plota_patfiltro <- function(x, qual) {
 
     pat <- valido <- filtro <- cores <- NULL
 
-    if(!attr(dat, "classfiltrapats")) {
+    if(!attr(x, "classfiltrapats")) {
         stop(paste0("'qual' se refere aos dados de um patamar especifico, porem a classificacao ainda",
             " nao foi realizada", "\n Use polijus::classfiltrapats"))
     }
 
-    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- x[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
     ranges <- as.list(ranges)
 
     qual <- sub("pat_", "", qual)
 
-    dplot  <- copy(dat[[2]])[pat == qual]
-    filtro <- dat$patinfo[[qual]]
+    dplot  <- copy(x[[2]])[pat == qual]
+    filtro <- x$patinfo[[qual]]
 
     escala <- c("deepskyblue2", "purple", "red", "orange", "yellow2")
     dplot[, filtro := filtro$filtro]
@@ -248,26 +248,26 @@ plota_patfiltro <- function(dat, qual) {
         xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
 }
 
-plota_patconv <- function(dat, qual) {
+plota_patconv <- function(x, qual) {
 
     pat <- valido <- NULL
 
-    if(!attr(dat, "evalremanso")) {
+    if(!attr(x, "evalremanso")) {
         stop(paste0("'qual' se refere a convergencia entre dois patamares, porem esta analise ainda",
             " nao foi realizada", "\n Use polijus::evalremanso"))
     }
 
-    ranges <- dat[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
+    ranges <- x[[1]][valido == TRUE, lapply(.SD, range), .SDcols = c("vazao", "njus")]
     ranges <- as.list(ranges)
 
-    patamares <- sort(unique(dat$hist_est$pat))
+    patamares <- sort(unique(x$hist_est$pat))
 
     qual    <- sub("conv_", "", qual)
-    qualant <- patamares[which(patamares == qual) - attr(dat, "step_converg")]
+    qualant <- patamares[which(patamares == qual) - attr(x, "step_converg")]
     quais   <- c(qualant, qual)
 
-    dplot <- copy(dat[[2]])[pat %in% quais]
-    tends <- lapply(dat$patinfo[quais], function(l) l$tend[[4]])
+    dplot <- copy(x[[2]])[pat %in% quais]
+    tends <- lapply(x$patinfo[quais], function(l) l$tend[[4]])
 
     tends <- mapply(quais, tends, SIMPLIFY = FALSE, FUN = function(pat, mod) {
         vaz  <- if(class(mod) == "loess") mod$x[, 1] else mod$model[, 2]
@@ -276,8 +276,8 @@ plota_patconv <- function(dat, qual) {
         out[order(out$vazao), ]
     })
 
-    vazconv     <- dat$patinfo[[qual]]["vazconv"]
-    vazconv_reg <- dat$patinfo[[qual]]["vazconv_reg"]
+    vazconv     <- x$patinfo[[qual]]["vazconv"]
+    vazconv_reg <- x$patinfo[[qual]]["vazconv_reg"]
 
     cores <- structure(c("deepskyblue", "deepskyblue4"), names = quais)
 

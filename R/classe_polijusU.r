@@ -54,21 +54,21 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
 #' @export 
 
-print.polijusU <- function(polijus, ...) {
+print.polijusU <- function(x, ...) {
 
-    out <- coef(polijus)
-    cli::cli_h2(attr(polijus, "tag"))
+    out <- coef(x)
+    cli::cli_h2(attr(x, "tag"))
     print(out)
 }
 
 #' @export 
 
-coef.polijusU <- function(polijus, ...) {
+coef.polijusU <- function(object, ...) {
 
-    npoli <- attr(polijus, "npoli")
+    npoli <- attr(object, "npoli")
     out <- lapply(seq(npoli), function(i) {
-        dom <- polijus$bounds[[i]]
-        coef <- polijus$coefs[[i]]
+        dom <- object$bounds[[i]]
+        coef <- object$coefs[[i]]
 
         matrix(c(dom, coef), nrow = 1,
             dimnames = list(paste0("poli", i), c("Vaz_min", "Vaz_max", paste0("A", 0:4))))
@@ -81,16 +81,16 @@ coef.polijusU <- function(polijus, ...) {
 
 #' @export 
 
-fitted.polijusU <- function(polijus, ...) {
+fitted.polijusU <- function(object, ...) {
 
     vazao <- poli <- NULL
 
-    npoli <- attr(polijus, "npoli")
+    npoli <- attr(object, "npoli")
 
-    coefs <- polijus$coefs
+    coefs <- object$coefs
 
     fitted <- lapply(seq(npoli), function(i) {
-        vaz    <- polijus$model[poli == i, vazao]
+        vaz    <- object$model[poli == i, vazao]
         coefI  <- coefs[[i]]
         fit    <- lapply(seq(coefI), function(i) vaz^(i - 1) * coefI[i])
 
@@ -104,18 +104,18 @@ fitted.polijusU <- function(polijus, ...) {
 
 #' @export 
 
-predict.polijusU <- function(polijus, newdata, ...) {
+predict.polijusU <- function(object, newdata, ...) {
 
     vazao <- NULL
 
     setDT(newdata)
 
-    npoli <- attr(polijus, "npoli")
+    npoli <- attr(object, "npoli")
 
-    coefs <- polijus$coefs
+    coefs <- object$coefs
 
     predicted <- lapply(seq(npoli), function(i) {
-        bounds <- polijus$bounds[[i]]
+        bounds <- object$bounds[[i]]
         vaz    <- newdata[vazao %between% bounds, vazao]
         coefI  <- coefs[[i]]
         pred   <- lapply(seq(coefI), function(i) vaz^(i - 1) * coefI[i])

@@ -129,7 +129,7 @@ copy.datcurvavase <- function(dat) {
 
 #' @export
 
-scale.datcbase <- function(dat, center = TRUE, scale = TRUE) {
+scale.datcbase <- function(x, center = TRUE, scale = TRUE) {
 
     if(center) {
         medias <- sapply(c("vazao", "njus"), function(col) {
