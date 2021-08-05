@@ -138,13 +138,13 @@ scale.datcbase <- function(x, center = TRUE, scale = TRUE) {
 
     if(center) {
         medias <- sapply(c("vazao", "njus"), function(col) {
-            vhist <- dat[[1]][[col]]
-            lext  <- lapply(dat[[2]], function(ext) ext[[col]])
+            vhist <- x[[1]][[col]]
+            lext  <- lapply(x[[2]], function(ext) ext[[col]])
             mean(c(vhist, unlist(lext)))
         })
 
-        dat$hist[, 3:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 3:2]
-        lapply(dat$ext, function(d) {
+        x$hist[, 3:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 3:2]
+        lapply(x$ext, function(d) {
             d[, 1:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 1:2]
             invisible(NULL)
         })
@@ -152,13 +152,13 @@ scale.datcbase <- function(x, center = TRUE, scale = TRUE) {
 
     if(scale) {
         sds <- sapply(c("vazao", "njus"), function(col) {
-            vhist <- dat[[1]][[col]]
-            lext  <- lapply(dat[[2]], function(ext) ext[[col]])
+            vhist <- x[[1]][[col]]
+            lext  <- lapply(x[[2]], function(ext) ext[[col]])
             sd(c(vhist, unlist(lext)))
         })
 
-        dat$hist[, 3:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 3:2]
-        lapply(dat$ext, function(d) {
+        x$hist[, 3:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 3:2]
+        lapply(x$ext, function(d) {
             d[, 1:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 1:2]
             invisible(NULL)
         })
