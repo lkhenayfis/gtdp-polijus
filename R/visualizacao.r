@@ -28,31 +28,17 @@
 #' 
 #' @param x objeto \code{datpoli}
 #' @param qual string indicando o que deve ser plotado. Ver Detalhes
+#' @param ... não é utilizado, existe apenas para compatibilização com a genérica \code{plot}
 #' 
 #' @return plot das informações requisitadas em \code{qual}
 #' 
 #' @examples 
 #' 
-#' # detecta vazoes estaveis
-#' x <- filtravazest(dummydata)
-#' 
-#' # classifica e filtra por patamares
-#' x <- classfiltrapats(x)
-#' 
-#' # plot
-#' plot(x, "todos") # dado completo
-#' plot(x, "estaveis") # apenas aqueles em condicao estavel
-#' plot(x, "pat_020.5") # plot de um patamar especifico
-#' 
-#' \dontrun{
-#' 
-#' # tentar plots de informacoes ainda nao geradas resulta em erro
-#' plot(dummydata, "filtrados") # dummydata so contem dados brutos, nao existe ainda o historico filtrado
-#' }
+#' plot(dummydata, "todos") # dado completo
+#' plot(dummydata, "estaveis") # apenas aqueles em condicao estavel
+#' plot(dummydata, "pat_020.5") # plot de um patamar especifico
 #' 
 #' @export
-#' 
-#' @rdname importadados
 
 plot.datpoli <- function(x, qual, ...) {
 

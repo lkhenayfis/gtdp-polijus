@@ -76,7 +76,7 @@ evalremanso <- function(dat, tol = .05, step = 2) {
 
 checaconv <- function(pat1, pat2, tol, vazmin, dat) {
 
-    pat <- valido <- NULL
+    vazao <- pat <- valido <- NULL
 
     d1 <- dat$hist_est[(pat == pat1) & (valido == TRUE)]
     d2 <- dat$hist_est[(pat == pat2) & (valido == TRUE)]

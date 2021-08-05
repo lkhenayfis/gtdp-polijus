@@ -4,3 +4,6 @@
 \name{polijus}
 \alias{polijus}
 \title{Pacote polijus}
+\description{
+Pacote para desenvolvimento das curvas vazão-nível de jusante segundo metodologia do GTDP
+}

@@ -6,6 +6,11 @@
 \usage{
 extraplog(dbase, tol = 1e-05)
 }
+\arguments{
+\item{dbase}{objeto \code{datcbase} contendo dados da curva base para extrapolar}
+
+\item{tol}{tolerância para consideração de região linear. Ver Detalhes}
+}
 \description{
 Extrapolação logarítmica
 }

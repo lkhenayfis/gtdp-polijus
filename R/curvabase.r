@@ -62,6 +62,9 @@ extraibase <- function(dat, subset = NULL) {
 
 #' Extrapolação logarítmica
 #' 
+#' @param dbase objeto \code{datcbase} contendo dados da curva base para extrapolar
+#' @param tol tolerância para consideração de região linear. Ver Detalhes
+#' 
 #' @export
 
 extraplog <- function(dbase, tol = 1e-5) {

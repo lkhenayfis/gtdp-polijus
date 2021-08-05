@@ -100,7 +100,8 @@ importadados <- function(path = NULL) {
 #'     valido = TRUE)
 #' 
 #' # Extensao
-#' l_ext <- list(data.frame(vazao = 1:6, njus = log(1:6)), data.frame(vazao = 0:7, njus = .8 * (0:7) + 1))
+#' l_ext <- list(data.frame(vazao = 1:6, njus = log(1:6)),
+#'     data.frame(vazao = 0:7, njus = .8 * (0:7) + 1))
 #' 
 #' # Usando codigo 6 (Furnas) e path NULL (idealmente 'path' aqui seria o caminho onde estao os dados)
 #' new_datpoli(path = NULL, cod = 6, hist = d_hist, ext = l_ext)
