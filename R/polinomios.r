@@ -105,7 +105,7 @@ fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) {
 
 parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
-    dat <- copy(dat)
+    dat <- copybase(dat)
 
     ngraus <- length(graus)
     if(ngraus > 3) {

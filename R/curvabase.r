@@ -121,12 +121,14 @@ extraplog <- function(dbase, tol = 1e-5) {
 
 # HELPERS ------------------------------------------------------------------------------------------
 
-#' @export
-
-copy.datcurvavase <- function(dat) {
+copybase <- function(dat) {
     out <- list(hist = NULL, ext = NULL)
     out$hist <- copy(dat$hist)
     out$ext  <- lapply(dat$ext, copy)
+
+    class(out) <- "datcbase"
+    attr(out, "vazzero") <- 0
+
     return(out)
 }
 
