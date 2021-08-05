@@ -1,4 +1,24 @@
+################################ CLASSE POLIJUS UNIVARIADO E METODOS ###############################
 
+#' Objeto \code{polijusU}
+#' 
+#' Contrutor e métodos da classe \code{polijusU} -- curva de jusante univariada
+#' 
+#' @name polijusU
+NULL
+
+#' @details \code{new_polijusU} não deveria ser utilizada diretamente pelo usuário
+#' 
+#' @param coefs lista de um, dois ou três elementos contendo coeficientes ajustados das partes
+#'     polinomiais
+#' @param bounds lista contendo vetores de duas posições indicando o domínio de cada parte
+#' @param dat objeto passado à \code{fitpoli}
+#' @param vcov matriz de variâncias e covariâncas dos coeficientes ajustados
+#' @param tipo o tipo de ajuste
+#' @param tag uma tag para identificação de qual curva se trata no print
+#' 
+#' @rdname polijusU
+#' 
 #' @export
 
 new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
@@ -52,6 +72,11 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
 # METODOS ------------------------------------------------------------------------------------------
 
+#' @param object,x objeto tipo \code{polijusU}
+#' @param ... demais parâmetros 
+#' 
+#' @rdname polijusU
+#' 
 #' @export 
 
 print.polijusU <- function(x, ...) {
@@ -61,6 +86,8 @@ print.polijusU <- function(x, ...) {
     print(out)
 }
 
+#' @rdname polijusU
+#' 
 #' @export 
 
 coef.polijusU <- function(object, ...) {
@@ -79,6 +106,8 @@ coef.polijusU <- function(object, ...) {
     return(out)
 }
 
+#' @rdname polijusU
+#' 
 #' @export 
 
 fitted.polijusU <- function(object, ...) {
@@ -102,6 +131,10 @@ fitted.polijusU <- function(object, ...) {
     return(fitted)
 }
 
+#' @param newdata data.frame ou data.table opcional contendo dados com os quais realizar previsão
+#' 
+#' @rdname polijusU
+#' 
 #' @export 
 
 predict.polijusU <- function(object, newdata, ...) {
