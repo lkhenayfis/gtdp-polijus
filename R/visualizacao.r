@@ -105,6 +105,37 @@ plot.datcbase <- function(x, datorig, ...) {
         col = "green4")
 }
 
+#' @export
+
+plot.polijusU <- function(x, ...) {
+
+    npoli <- attr(x, "npoli")
+
+    lx <- lapply(x$bounds, function(vec) seq(vec[1], vec[2], length.out = 500))
+    ly <- lapply(lx, function(vec) predict(x, newdata = data.frame(vazao = vec)))
+
+    cores <- c("gold1", "orange1", "coral")
+
+    titulo <- attr(x, "tag")
+    if(grepl("curva base", titulo)) {
+        titulo <- paste0("Ajuste da ", titulo)
+    } else {
+        titulo <- paste0("Ajuste do ", titulo)
+    }
+
+    plot(x$model[, c("vazao", "njus")], panel.first = grid(col = "grey85"),
+        col = "deepskyblue2", pch = 16,
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]",
+        main = titulo)
+    for(i in seq(npoli)) {
+        lines(lx[[i]], ly[[i]], col = cores[i], lwd = 2)
+    }
+    legend("bottomright", inset = .02,
+        legend = c("Dados ajustados", paste0("Polinômio ", seq(npoli))),
+        pch = c(16, rep(NA, npoli)), lty = c(NA, rep(1, npoli)), lwd = c(NA, rep(2, npoli)),
+        col = c("deepskyblue2", cores[seq(npoli)]))
+}
+
 # HELPERS ------------------------------------------------------------------------------------------
 
 plota_datfull <- function(x, qual) {
