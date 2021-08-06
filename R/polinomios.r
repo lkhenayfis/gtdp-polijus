@@ -228,7 +228,7 @@ fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
 
     dat1 <- dat$hist[vazao <= pto_turbmax[1]]
 
-    vazrestr1 <- seq(attr(dat, "vazzero"), max(dat1[, vazao]), length.out = 1000)
+    vazrestr1 <- seq(attr(dat, "vazzero"), pto_turbmax[1], length.out = 1000)
 
     A1 <- outer(dat1[, vazao], 0:graus[1], "^")
     b1 <- data.matrix(dat1[, njus, drop = FALSE])
@@ -239,7 +239,7 @@ fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
 
     dat2 <- dat$hist[vazao > pto_turbmax[1]]
 
-    vazrestr2 <- seq(max(dat1[, vazao]), max(dat2[, vazao]), length.out = 1000)
+    vazrestr2 <- seq(pto_turbmax[1], max(dat2[, vazao]), length.out = 1000)
 
     A2 <- outer(dat2[, vazao], 0:graus[1], "^")
     b2 <- data.matrix(dat2[, njus, drop = FALSE])
@@ -263,4 +263,49 @@ fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
     bounds <- list(range(vazrestr1), range(vazrestr2))
 
     new_polijusU(coef, bounds, dat, sol$covar, "H2", "curvabase")
+}
+
+fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
+
+    vazao <- njus <- NULL
+
+    dath1 <- dat$hist
+
+    vazrestr1 <- seq(attr(dat, "vazzero"), pto_ext[1], length.out = 1000)
+
+    A1 <- outer(dath1[, vazao], 0:graus[1], "^")
+    b1 <- data.matrix(dath1[, njus, drop = FALSE])
+    E1 <- rbind(outer(tail(vazrestr1, 1), 0:graus[1], function(x, y) x^y),
+                outer(tail(vazrestr1, 1), 0:graus[1], function(x, y) y * x^(y - 1)))
+    f1 <- rbind(pto_ext[2], 0)
+    G1 <- outer(vazrestr1, 0:graus[1], function(x, y) y * x^(y - 1))
+    h1 <- matrix(rep(0, length(vazrestr1)))
+
+    date1 <- dat$ext[[1]]
+
+    vazrestr2 <- seq(pto_ext[1], max(date1[, vazao]), length.out = 1000)
+
+    A2 <- outer(date1[, vazao], 0:graus[1], "^")
+    b2 <- data.matrix(date1[, njus, drop = FALSE])
+    E2 <- rbind(outer(head(vazrestr2, 1), 0:graus[2], function(x, y) x^y),
+                outer(tail(vazrestr2, 1), 0:graus[2], function(x, y) y * x^(y - 1)))
+    f2 <- rbind(pto_ext[2], 0)
+    G2 <- outer(vazrestr2, 0:graus[1], function(x, y) y * x^(y - 1))
+    h2 <- matrix(rep(0, length(vazrestr2)))
+
+    A <- Matrix::bdiag(A1, A2)
+    b <- rbind(b1, b2)
+    E <- Matrix::bdiag(E1, E2)
+    f <- rbind(f1, f2)
+    G <- Matrix::bdiag(G1, G2)
+    h <- Matrix::Matrix(rbind(h1, h2))
+
+    sol  <- limSolve::lsei(A, b, E, f, G, h, fulloutput = TRUE)
+
+    breaks <- c(1, graus[1] + 1, graus[1] + 2, graus[1] + graus[2] + 2)
+    coef   <- lapply(seq(graus), function(i) sol$X[breaks[2 * i - 1]:breaks[2 * i]])
+
+    bounds <- list(range(vazrestr1), range(vazrestr2))
+
+    new_polijusU(coef, bounds, dat, sol$covar, "H1E1", "curvabase")
 }
