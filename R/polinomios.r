@@ -93,10 +93,10 @@ fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) {
 
     l_parse <- parseargsbase(dat, ext, graus, pto_turbmax, pto_ext)
     l_func  <- l_parse[[1]]
-    #scales  <- l_parse[[2]]
+    scales  <- l_parse[[2]]
 
     out <- eval(do.call(call, l_func))
-    #out <- rescale(out, scales)
+    out <- rescale(out, scales)
 
     return(out)
 }

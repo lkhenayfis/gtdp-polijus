@@ -178,15 +178,18 @@ rescale <- function(polijus, scales, inv = FALSE) {
         DELTA <- lapply(seq(npoli), function(i) {
             coefI <- coefs[[i]]
             outer(1:5, 1:5, function(m, n) {
-                (n >= m) * sig[2] * (-1)^(n - m) * choose(n - 1, m - 1) * mu[1]^(n - m) / sig[1]^(n - 1) * coefI[n]
+                (n >= m) * sig[2] * (-1)^(n - m) * choose(n - 1, m - 1) * mu[1]^(n - m) / sig[1]^(n - 1)
             })
         })
         d <- lapply(seq(npoli), function(i) c(mu[2], double(4)))
 
         polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]))
         polijus$bounds <- lapply(seq(npoli), function(i) polijus$bounds[[i]] * sig[1] + mu[1])
-        polijus$model[, 1:2 := mapply(.SD, mu, sig, FUN = function(d, u, s) d * s + u,
-            SIMPLIFY = FALSE), .SDcols = 1:2]
+
+        # nao usa modificacao in-place de proposito para evitar modificar o argumento passado por
+        # referencia no parent frame
+        polijus$model[, c("vazao", "njus")] <- mapply(polijus$model[, c("vazao", "njus")], mu, sig,
+            SIMPLIFY = FALSE, FUN = function(d, u, s) d * s + u)
 
         bDELTA  <- as.matrix(do.call(Matrix::bdiag, DELTA))
         bDELTAt <- as.matrix(do.call(Matrix::bdiag, lapply(DELTA, t)))
@@ -201,15 +204,18 @@ rescale <- function(polijus, scales, inv = FALSE) {
         DELTA <- lapply(seq(npoli), function(i) {
             coefI <- coefs[[i]]
             outer(1:5, 1:5, function(m, n) {
-                (n >= m) * choose(n - 1, m - 1) * mu[1]^(n - m) * sig[1]^(n - 1) * coefI[n]
+                (n >= m) * sig[2]^(-1) * choose(n - 1, m - 1) * mu[1]^(n - m) * sig[1]^(m - 1)
             })
         })
         d <- lapply(seq(npoli), function(i) c(-mu[2] / sig[2], double(4)))
 
-        polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]) / sig[2])
+        polijus$coefs  <- lapply(seq(npoli), function(i) c(DELTA[[i]] %*% coefs[[i]] + d[[i]]))
         polijus$bounds <- lapply(seq(npoli), function(i) (polijus$bounds[[i]] - mu[1]) / sig[1])
-        polijus$model[, 1:2 := mapply(.SD, mu, sig, FUN = function(d, u, s) (d - u) / s,
-            SIMPLIFY = FALSE), .SDcols = 1:2]
+
+        # nao usa modificacao in-place de proposito para evitar modificar o argumento passado por
+        # referencia no parent frame
+        polijus$model[, c("vazao", "njus")] <- mapply(polijus$model[, c("vazao", "njus")], mu, sig,
+            SIMPLIFY = FALSE, FUN = function(d, u, s) (d - u) / s)
 
         bDELTA  <- as.matrix(do.call(Matrix::bdiag, DELTA))
         bDELTAt <- as.matrix(do.call(Matrix::bdiag, lapply(DELTA, t)))
