@@ -42,6 +42,7 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
     }
 
     dat$hist <- dat$hist[, c("vazao", "njus")]
+    if(length(dat$ext) > 0) dat$ext <- dat$ext[[1]] else dat$ext <- NULL
     model  <- rbindlist(dat)
     breaks <- unlist(bounds)
     model[, poli := findInterval(vazao, breaks[!duplicated(breaks)], all.inside = TRUE)]
