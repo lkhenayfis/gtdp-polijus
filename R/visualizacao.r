@@ -111,8 +111,11 @@ plot.polijusU <- function(x, ...) {
 
     npoli <- attr(x, "npoli")
 
-    lx <- lapply(x$bounds, function(vec) seq(vec[1], vec[2], length.out = 500))
-    ly <- lapply(lx, function(vec) predict(x, newdata = data.frame(vazao = vec)))
+    bounds <- unlist(x$bounds)
+
+    vx <- seq(head(bounds, 1), tail(bounds, 1), length.out = 500 * npoli)
+    vy <- predict(x, newdata = data.frame(vazao = vx))
+    poli <- findInterval(vx, unique(bounds), all.inside = TRUE)
 
     cores <- c("gold1", "orange1", "coral")
 
@@ -128,7 +131,7 @@ plot.polijusU <- function(x, ...) {
         xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]",
         main = titulo)
     for(i in seq(npoli)) {
-        lines(lx[[i]], ly[[i]], col = cores[i], lwd = 2)
+        lines(vx[poli == i], vy[poli == i], col = cores[i], lwd = 2)
     }
     legend("bottomright", inset = .02,
         legend = c("Dados ajustados", paste0("Polinômio ", seq(npoli))),

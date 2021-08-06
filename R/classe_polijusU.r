@@ -142,15 +142,16 @@ predict.polijusU <- function(object, newdata, ...) {
 
     vazao <- NULL
 
-    setDT(newdata)
-
     npoli <- attr(object, "npoli")
-
     coefs <- object$coefs
+    bounds <- object$bounds
+
+    setDT(newdata)
+    breaks <- unlist(bounds)
+    newdata[, poli := findInterval(vazao, breaks[!duplicated(breaks)], all.inside = TRUE)]
 
     predicted <- lapply(seq(npoli), function(i) {
-        bounds <- object$bounds[[i]]
-        vaz    <- newdata[vazao %between% bounds, vazao]
+        vaz    <- newdata[poli == i, vazao]
         coefI  <- coefs[[i]]
         pred   <- lapply(seq(coefI), function(i) vaz^(i - 1) * coefI[i])
 
