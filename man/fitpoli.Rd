@@ -3,11 +3,14 @@
 \name{fitpoli}
 \alias{fitpoli}
 \alias{fitpoli.datcbase}
+\alias{fitpoli.default}
 \title{Ajuste de curvas polinomiais por partes}
 \usage{
 fitpoli(dat, ext, graus, pto_turbmax, ...)
 
 \method{fitpoli}{datcbase}(dat, ext, graus, pto_turbmax, pto_ext)
+
+\method{fitpoli}{default}(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado)
 }
 \arguments{
 \item{dat}{objeto do tipo \code{datcbase} ou \code{data.table}. Ver Detalhes}
@@ -23,9 +26,29 @@ ajustados aos dados históricos}
 
 \item{pto_ext}{vetor de duas posicoes indicando coordenadas da conexão entre último polinômio
 ajustados aos dados históricos e polinômio dos dados de extensão}
+
+\item{vaz_ext}{escalar indicando a vazão da conexão entre último polinômio ajustados aos dados
+históricos e curva base}
+
+\item{zero_forcado}{booleano indicando se o A0 deve ser restrito igual ao patamar de referência}
 }
 \value{
-objeto \code{polijusU}
+objeto \code{polijusU}, uma lista contendo
+\describe{
+\item{coef}{lista de coeficientes por parte polinomial ajustada}
+\item{bounds}{lista de limites do domínio de cada parte polinomial ajustada}
+\item{model}{dado de vazao e nível ajustado com coluna de indicador da parte polinomial}
+\item{vcov}{matriz de variâncias e covariâncias dos coeficientes ajustados}
+\item{fitted}{vetor de pontos ajustados}
+}
+
+Adicionalmente possui atributos
+\describe{
+\item{npoli}{número de partes polinomiais ajustadas}
+\item{graus}{vetor de graus das partes polinomiais}
+\item{tipo}{o tipo de ajuste realizado}
+\item{tag}{string indicando o nome do ajuste (curva base, patamar XXX, etc)}
+}
 }
 \description{
 Genérica e métodos para ajuste das curvas polinomiais por partes a cada conjunto de dados
@@ -72,6 +95,45 @@ associados ao tipo \code{H2}. Caso não haja parâmetros suficientes para realiz
 Finalmente, um ajuste do tipo \code{H2E1} demanda o fornecimento de todos os parâmetros
 anteriormente citados, da forma como foram detalhados, exceto por \code{graus} que agora deveria
 conter 3 elementos.
+}
+
+\section{Curvas individuais}{
+
+
+Quando \code{dat} é um data.table comum a função assume que se trata de um ajuste de curvas
+individuais por patamar. As regras de ajuste da curva neste caso são muito similares àquelas
+aplicadas à curva base, com algumas pequenas distinções.
+
+As curvas para patamares individuais também estão restritas a três partes polinomiais, porém por
+construção estas curvas necessariamente devem convergir com a curva base, de modo que a(s)
+última(s) partes polinomiais são polinômios da curva base. Desta forma, são possíveis duas
+configurações de ajuste
+
+\itemize{
+\item Um polinômio para dados históricos e um ou dois da curva base sem zero forcado (H1z0)
+\item Um polinômio para dados históricos e um ou dois da curva base com zero forcado (H1z1)
+\item Dois polinômios para dados históricos e apenas um da curva base sem zero forcado (H2z0)
+\item Dois polinômios para dados históricos e apenas um da curva base com zero forcado (H2z1)
+}
+
+É importante ressaltar que, no caso de serem usados dois polinômios para representação do patamar
+individual, a conexão com a curva base \bold{NECESSARIAMENTE} deverá ocorrer dentro do domínio do
+último polinômio que a compõe.
+
+\code{dat}, \code{graus} e \code{pto_turbmax} são utilizdos exatamente como no método de ajuste
+da curva base, com a exceção de que \code{graus} aqui é de tamanho máximo igual a 2.
+
+\code{ext} para ajuste de polinômios individuais deve ser um objeto \code{polijusU} contendo
+ajuste da curva base na qual convergir. Ver Exemplos.
+
+\code{vaz_ext} funciona de forma similar a \code{pto_ext} no método para curva base, com a
+exceção de que aqui só é necessário fornecer uma vazão e não uma coordenada (vazão, nível). Isto
+é natural, pois a convergência entre polinômios de patamares individuais deve ocorrer exatamente
+em um ponto da curva base (portanto o nível do ponto de convergência é calculado para a dada
+vazão)
+
+\code{zero_forcado} indica se deve ser utilizada a restriçao que garante intercepto igual ao
+nível de referência para o qual se ajusta a curva
 }
 
 \examples{

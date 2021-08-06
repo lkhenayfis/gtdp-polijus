@@ -2,6 +2,7 @@
 
 S3method(coef,polijusU)
 S3method(fitpoli,datcbase)
+S3method(fitpoli,default)
 S3method(fitted,polijusU)
 S3method(plot,datcbase)
 S3method(plot,datpoli)
