@@ -287,15 +287,15 @@ fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
 
     A2 <- outer(date1[, vazao], 0:graus[1], "^")
     b2 <- data.matrix(date1[, njus, drop = FALSE])
-    E2 <- rbind(outer(head(vazrestr2, 1), 0:graus[2], function(x, y) x^y),
-                outer(tail(vazrestr2, 1), 0:graus[2], function(x, y) y * x^(y - 1)))
-    f2 <- rbind(pto_ext[2], 0)
+    E2 <- rbind(outer(tail(vazrestr2, 1), 0:graus[2], function(x, y) -y * x^(y - 1)),
+                outer(head(vazrestr2, 1), 0:graus[2], function(x, y) x^y))
+    f2 <- rbind(pto_ext[2])
     G2 <- outer(vazrestr2, 0:graus[1], function(x, y) y * x^(y - 1))
     h2 <- matrix(rep(0, length(vazrestr2)))
 
     A <- Matrix::bdiag(A1, A2)
     b <- rbind(b1, b2)
-    E <- Matrix::bdiag(E1, E2)
+    E <- cbind(rbind(E1, 0), rbind(0, E2))
     f <- rbind(f1, f2)
     G <- Matrix::bdiag(G1, G2)
     h <- Matrix::Matrix(rbind(h1, h2))
