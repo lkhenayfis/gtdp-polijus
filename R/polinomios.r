@@ -9,9 +9,7 @@
 #' @param graus vetor de até três posições indicando os graus de cada parte polinomial. Ver Detalhes
 #' @param pto_turbmax vetor de duas posicoes indicando coordenadas da conexão entre polinômios 
 #'     ajustados aos dados históricos
-#' @param pto_ext vetor de duas posicoes indicando coordenadas da conexão entre último polinômio
-#'     ajustados aos dados históricos e polinômio dos dados de extensão
-#' @param opcoes lista contendo opcoes modificadoras do ajuste. Ver Detalhes
+#' @param ... demais parâmetros específicos de cada método. Ver Detalhes
 #' 
 #' @return objeto \code{polijusU}
 #' 
@@ -19,8 +17,11 @@
 #' 
 #' @export
 
-fitpoli <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) UseMethod("fitpoli")
+fitpoli <- function(dat, ext, graus, pto_turbmax, ...) UseMethod("fitpoli")
 
+#' @param pto_ext vetor de duas posicoes indicando coordenadas da conexão entre último polinômio
+#'     ajustados aos dados históricos e polinômio dos dados de extensão
+#' 
 #' @section Curva base:
 #' 
 #' Quando \code{dat} é da classe \code{datcbase} o ajuste da curva pode conter até três partes 
@@ -87,7 +88,7 @@ fitpoli <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) UseMethod("fi
 #' 
 #' @export
 
-fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) {
+fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
     l_parse <- parseargsbase(dat, ext, graus, pto_turbmax, pto_ext)
     l_func  <- l_parse[[1]]

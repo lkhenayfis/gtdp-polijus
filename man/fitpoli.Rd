@@ -5,9 +5,9 @@
 \alias{fitpoli.datcbase}
 \title{Ajuste de curvas polinomiais por partes}
 \usage{
-fitpoli(dat, ext, graus, pto_turbmax, pto_ext, opcoes)
+fitpoli(dat, ext, graus, pto_turbmax, ...)
 
-\method{fitpoli}{datcbase}(dat, ext, graus, pto_turbmax, pto_ext, opcoes)
+\method{fitpoli}{datcbase}(dat, ext, graus, pto_turbmax, pto_ext)
 }
 \arguments{
 \item{dat}{objeto do tipo \code{datcbase} ou \code{data.table}. Ver Detalhes}
@@ -19,10 +19,10 @@ fitpoli(dat, ext, graus, pto_turbmax, pto_ext, opcoes)
 \item{pto_turbmax}{vetor de duas posicoes indicando coordenadas da conexão entre polinômios
 ajustados aos dados históricos}
 
+\item{...}{demais parâmetros específicos de cada método. Ver Detalhes}
+
 \item{pto_ext}{vetor de duas posicoes indicando coordenadas da conexão entre último polinômio
 ajustados aos dados históricos e polinômio dos dados de extensão}
-
-\item{opcoes}{lista contendo opcoes modificadoras do ajuste. Ver Detalhes}
 }
 \value{
 objeto \code{polijusU}
