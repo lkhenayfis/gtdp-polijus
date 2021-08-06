@@ -143,9 +143,9 @@ scale.datcbase <- function(x, center = TRUE, scale = TRUE) {
             mean(c(vhist, unlist(lext)))
         })
 
-        x$hist[, 3:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 3:2]
+        x$hist[, c("vazao", "njus") := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = "-"), .SDcols = c("vazao", "njus")]
         lapply(x$ext, function(d) {
-            d[, 1:2 := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = function(v, m) v - m), .SDcols = 1:2]
+            d[, c("vazao", "njus") := mapply(.SD, medias, SIMPLIFY = FALSE, FUN = "-"), .SDcols = c("vazao", "njus")]
             invisible(NULL)
         })
     }
@@ -157,9 +157,9 @@ scale.datcbase <- function(x, center = TRUE, scale = TRUE) {
             sd(c(vhist, unlist(lext)))
         })
 
-        x$hist[, 3:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 3:2]
+        x$hist[, c("vazao", "njus") := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = "/"), .SDcols = c("vazao", "njus")]
         lapply(x$ext, function(d) {
-            d[, 1:2 := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = function(v, m) v / m), .SDcols = 1:2]
+            d[, c("vazao", "njus") := mapply(.SD, sds, SIMPLIFY = FALSE, FUN = "/"), .SDcols = c("vazao", "njus")]
             invisible(NULL)
         })
     }
