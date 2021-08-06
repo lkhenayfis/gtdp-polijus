@@ -144,8 +144,8 @@ fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 #' \code{dat}, \code{graus} e \code{pto_turbmax} são utilizdos exatamente como no método de ajuste 
 #' da curva base, com a exceção de que \code{graus} aqui é de tamanho máximo igual a 2.
 #' 
-#' \code{ext} para ajuste de polinômios individuais deve ser um objeto \code{polijusU} contendo 
-#' ajuste da curva base na qual convergir. Ver Exemplos.
+#' \code{ext} é obrigatório para ajuste de polinômios individuais. Deve ser um objeto 
+#' \code{polijusU} contendo ajuste da curva base na qual convergir. Ver Exemplos.
 #' 
 #' \code{vaz_ext} funciona de forma similar a \code{pto_ext} no método para curva base, com a 
 #' exceção de que aqui só é necessário fornecer uma vazão e não uma coordenada (vazão, nível). Isto 
@@ -261,7 +261,7 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
     dat$ext <- dat$ext[ext]
 
-    # OPERA POR REFERENCIA EM DAT E RETORNA LISTA DE PARAMTROS DE ESCALONAMENTO
+    # OPERA POR REFERENCIA EM DAT E RETORNA LISTA DE PARAMETROS DE ESCALONAMENTO
     scales <- scale(dat)
 
     pto_turbmax <- (pto_turbmax - scales[[1]]) / scales[[2]]
@@ -444,5 +444,72 @@ fit_baseH2E1 <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
 parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
+    dat <- copybase(dat)
 
+    ngraus <- length(graus)
+    if(ngraus > 2) {
+        msg <- paste0("{.arg graus} possui mais de dois elementos -- reduzindo para apenas os tres primeiros")
+        cli::cli_warn(c("!" = msg,
+            " " = "Se esta tentando ajustar uma curva base, certifique-se de que {.arg dat} e um objeto
+                  do tipo {.cls datcbase}"))
+        graus  <- graus[1:3]
+        ngraus <- 3
+    }
+
+    temext <- !missing("ext")
+    temptm <- !missing("pto_turbmax")
+    tempve <- !missing("vaz_ext")
+    temzrf <- !missing("zero_forcado")
+
+    if(!(temext & tempve)) {
+        cli::cli_abort(c("Nao foi fornecido {.arg ext} e/ou {.arg vaz_ext}",
+            "x" = "Ajustes de polinomios individuais exigem uma curva base e vazao na qual convergir
+             (veja {.code ?polijus::fitpoli})",
+            " " = "Se esta tentando ajustar uma curva base, certifique-se de que {.arg dat} e um objeto
+                  do tipo {.cls datcbase}"))
+    }
+
+    if(!zero_forcado) {
+        cli::cli_warn(c("!" = "Nao foi fornecido {.arg zero_forcado} --- Utilizando TRUE"))
+        zero_forcado <- TRUE
+    }
+
+    if(ngraus == 1) {
+
+        # Caso de polinomio unico - ignora pto_turbmax
+        if(temptm) {
+            cli::cli_warn(c("!" = "{.arg graus} contem apenas um elemento, indicando polinomio unico",
+                " " = "O parametro {.arg pto_turbmax} sera ignorado. Para ajuste de dois poliomios
+                 forneca dois elementos em {.arg graus} (veja {.code ?polijus::fitpoli})"))
+        }
+
+        func <- "fit_indH1"
+        pto_turbmax <- c(NA_real_, NA_real_)
+    } else {
+
+        if(!temptm) {
+
+            cli::cli_abort(c("Nao foi fornecido {.arg pto_turbmax}", 
+                "x" = "{.arg graus} contem dois elementos, indicando ajuste de dois polinomios, mas
+                nao foi fornecido ponto de conexao (veja {.code ?polijus::fitpoli})"))
+        }
+
+        func <- "fit_indH2"
+    }
+
+    scales <- lapply(c(mean, sd), function(f) sapply(dat[, c("vazao", "njus")], f))
+    dat[, c("vazao", "njus") := mapply(.SD, scales[[1]], scales[[2]],
+        SIMPLIFY = FALSE, FUN = function(d, u, s) (d - u) / s), .SDcols = c("vazao", "njus")]
+
+    ext <- rescale(ext, scales, TRUE)
+
+    pto_turbmax <- (pto_turbmax - scales[[1]]) / scales[[2]]
+    vaz_ext     <- (vaz_ext - scales[[1]]) / scales[[2]]
+
+    attr(dat, "vazzero") <- -scales[[1]][1] / scales[[2]][1]
+
+    call <- list(func, dat = dat, ext = ext, graus = graus, pto_turbmax = pto_turbmax, vaz_ext = vaz_ext,
+        zero_forcado = zero_forcado)
+
+    return(list(call, scales))
 }

@@ -123,8 +123,8 @@ individual, a conexão com a curva base \bold{NECESSARIAMENTE} deverá ocorrer d
 \code{dat}, \code{graus} e \code{pto_turbmax} são utilizdos exatamente como no método de ajuste
 da curva base, com a exceção de que \code{graus} aqui é de tamanho máximo igual a 2.
 
-\code{ext} para ajuste de polinômios individuais deve ser um objeto \code{polijusU} contendo
-ajuste da curva base na qual convergir. Ver Exemplos.
+\code{ext} é obrigatório para ajuste de polinômios individuais. Deve ser um objeto
+\code{polijusU} contendo ajuste da curva base na qual convergir. Ver Exemplos.
 
 \code{vaz_ext} funciona de forma similar a \code{pto_ext} no método para curva base, com a
 exceção de que aqui só é necessário fornecer uma vazão e não uma coordenada (vazão, nível). Isto
