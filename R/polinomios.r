@@ -226,23 +226,23 @@ fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
 
     vazao <- njus <- NULL
 
-    dat1 <- dat$hist[vazao <= pto_turbmax[1]]
+    dath1 <- dat$hist[vazao <= pto_turbmax[1]]
 
     vazrestr1 <- seq(attr(dat, "vazzero"), pto_turbmax[1], length.out = 1000)
 
-    A1 <- outer(dat1[, vazao], 0:graus[1], "^")
-    b1 <- data.matrix(dat1[, njus, drop = FALSE])
+    A1 <- outer(dath1[, vazao], 0:graus[1], "^")
+    b1 <- data.matrix(dath1[, njus, drop = FALSE])
     E1 <- outer(tail(vazrestr1, 1), 0:graus[1], function(x, y) x^y)
     f1 <- pto_turbmax[2]
     G1 <- outer(vazrestr1, 0:graus[1], function(x, y) y * x^(y - 1))
     h1 <- matrix(rep(0, length(vazrestr1)))
 
-    dat2 <- dat$hist[vazao > pto_turbmax[1]]
+    dath2 <- dat$hist[vazao > pto_turbmax[1]]
 
-    vazrestr2 <- seq(pto_turbmax[1], max(dat2[, vazao]), length.out = 1000)
+    vazrestr2 <- seq(pto_turbmax[1], max(dath2[, vazao]), length.out = 1000)
 
-    A2 <- outer(dat2[, vazao], 0:graus[1], "^")
-    b2 <- data.matrix(dat2[, njus, drop = FALSE])
+    A2 <- outer(dath2[, vazao], 0:graus[1], "^")
+    b2 <- data.matrix(dath2[, njus, drop = FALSE])
     E2 <- outer(head(vazrestr2, 1), 0:graus[2], function(x, y) x^y)
     f2 <- pto_turbmax[2]
     G2 <- outer(vazrestr2, 0:graus[1], function(x, y) y * x^(y - 1))
