@@ -124,11 +124,13 @@ coef.polijusU <- function(object, ...) {
     return(out)
 }
 
+#' @param derivada booleano indicando se deve ser calculada a derivada no lugar do valor ajustado
+#' 
 #' @rdname polijusU
 #' 
 #' @export 
 
-fitted.polijusU <- function(object, ...) {
+fitted.polijusU <- function(object, derivada = FALSE, ...) {
 
     vazao <- poli <- NULL
 
@@ -136,10 +138,21 @@ fitted.polijusU <- function(object, ...) {
 
     coefs <- object$coefs
 
+    if(derivada) {
+
+        # normalmente calculariamos a derivada com somatorio i * beta_i * vaz^(i - 1)
+        # podemos compactar a constante i * coef[i] em uma coisa so, evitando um if dentro do laco
+        # calculando os valores ou derivadas da funcao ajustada
+        coefs <- lapply(coefs, function(vec) vec * (seq(vec) - 1))
+        k     <- 1
+    } else {
+        k <- 0
+    }
+
     fitted <- lapply(seq(npoli), function(i) {
         vaz    <- object$model[poli == i, vazao]
         coefI  <- coefs[[i]]
-        fit    <- lapply(seq(coefI), function(i) vaz^(i - 1) * coefI[i])
+        fit    <- lapply(seq(coefI) - 1, function(i) vaz^(i - k) * coefI[i + 1])
 
         rowSums(do.call(cbind, fit))
     })
@@ -150,12 +163,13 @@ fitted.polijusU <- function(object, ...) {
 }
 
 #' @param newdata data.frame ou data.table opcional contendo dados com os quais realizar previsão
+#' @param derivada booleano indicando se deve ser calculada a derivada no lugar do valor ajustado
 #' 
 #' @rdname polijusU
 #' 
 #' @export 
 
-predict.polijusU <- function(object, newdata, ...) {
+predict.polijusU <- function(object, newdata, derivada = FALSE, ...) {
 
     vazao <- NULL
 
@@ -167,16 +181,26 @@ predict.polijusU <- function(object, newdata, ...) {
     breaks <- unlist(bounds)
     newdata[, poli := findInterval(vazao, breaks[!duplicated(breaks)], all.inside = TRUE)]
 
+    if(derivada) {
+
+        # normalmente calculariamos a derivada com somatorio i * beta_i * vaz^(i - 1)
+        # podemos compactar a constante i * coef[i] em uma coisa so, evitando um if dentro do laco
+        # calculando os valores ou derivadas da funcao ajustada
+        coefs <- lapply(coefs, function(vec) vec * (seq(vec) - 1))
+        k     <- 1
+    } else {
+        k <- 0
+    }
+
     predicted <- lapply(seq(npoli), function(i) {
         vaz    <- newdata[poli == i, vazao]
         coefI  <- coefs[[i]]
-        pred   <- lapply(seq(coefI), function(i) vaz^(i - 1) * coefI[i])
+        pred   <- lapply(seq(coefI) - 1, function(i) vaz^(i - k) * coefI[i + 1])
 
         rowSums(do.call(cbind, pred))
     })
 
     predicted <- unlist(predicted)
-    predicted <- predicted[!duplicated(predicted)] # caso haja pontos exatamente iguais aos bounds (pouco provavel)
 
     return(predicted)
 }
