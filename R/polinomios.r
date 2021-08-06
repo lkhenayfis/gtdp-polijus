@@ -65,7 +65,7 @@ fitpoli <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) UseMethod("fi
 #' 
 #' @examples 
 #' 
-#' # METODO datcbase ---------------------------------------------
+#' # METODO datcbase 
 #' 
 #' dbase <- extraibase(dummydata)
 #' 
@@ -75,7 +75,6 @@ fitpoli <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) UseMethod("fi
 #' # ajuste de curva base H2
 #' polibase <- fitpoli(dbase, graus = c(3, 3), pto_turbmax = c(400, 32.1))
 #' 
-#' \dontrun{
 #' # ajuste de curva base H1E1
 #' polibase <- fitpoli(dat, ext = "CAD", graus = c(3, 3), pto_ext = c(1000, 34))
 #' polibase <- fitpoli(dat, ext = 1, graus = c(3, 3), pto_ext = c(1000, 34)) # mesma coisa que acima
@@ -83,7 +82,6 @@ fitpoli <- function(dat, ext, graus, pto_turbmax, pto_ext, opcoes) UseMethod("fi
 #' # ajuste de curva base H2E1
 #' polibase <- fitpoli(dat, ext = "CAD", graus = c(3, 3, 3), pto_turbmax = c(400, 32.1), 
 #'     pto_ext = c(1000, 34))
-#' }
 #' 
 #' @rdname fitpoli
 #' 
