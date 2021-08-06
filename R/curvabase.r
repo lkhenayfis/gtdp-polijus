@@ -55,7 +55,6 @@ extraibase <- function(dat, subset = NULL) {
 
     dbase <- list(hist = dbase, ext = lextrap)
     class(dbase) <- "datcbase"
-    attr(dbase, "vazzero") <- 0
 
     return(dbase)
 }
@@ -127,7 +126,6 @@ copybase <- function(dat) {
     out$ext  <- lapply(dat$ext, copy)
 
     class(out) <- "datcbase"
-    attr(out, "vazzero") <- 0
 
     return(out)
 }
