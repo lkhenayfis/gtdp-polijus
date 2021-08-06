@@ -17,6 +17,23 @@ NULL
 #' @param tipo o tipo de ajuste
 #' @param tag uma tag para identificação de qual curva se trata no print
 #' 
+#' @return objeto \code{polijusU}, uma lista contendo
+#' \describe{
+#'     \item{coef}{lista de coeficientes por parte polinomial ajustada}
+#'     \item{bounds}{lista de limites do domínio de cada parte polinomial ajustada}
+#'     \item{model}{dado de vazao e nível ajustado com coluna de indicador da parte polinomial}
+#'     \item{vcov}{matriz de variâncias e covariâncias dos coeficientes ajustados}
+#'     \item{fitted}{vetor de pontos ajustados}
+#' }
+#' 
+#' Adicionalmente possui atributos
+#' \describe{
+#'     \item{npoli}{número de partes polinomiais ajustadas}
+#'     \item{graus}{vetor de graus das partes polinomiais}
+#'     \item{tipo}{o tipo de ajuste realizado}
+#'     \item{tag}{string indicando o nome do ajuste (curva base, patamar XXX, etc)}
+#' }
+#' 
 #' @rdname polijusU
 #' 
 #' @export
