@@ -347,7 +347,7 @@ fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
     Ah1 <- outer(dath1[, vazao], 0:graus[1], "^")
     bh1 <- data.matrix(dath1[, njus, drop = FALSE])
     Eh1 <- rbind(outer(tail(vazrestrh1, 1), 0:graus[1], function(x, y) x^y),
-                outer(tail(vazrestrh1, 1), 0:graus[1], function(x, y) y * x^(y - 1)))
+                 outer(tail(vazrestrh1, 1), 0:graus[1], function(x, y) y * x^(y - 1)))
     fh1 <- rbind(pto_ext[2], 0)
     Gh1 <- outer(vazrestrh1, 0:graus[1], function(x, y) y * x^(y - 1))
     hh1 <- matrix(rep(0, length(vazrestrh1)))
@@ -359,7 +359,7 @@ fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
     Ae1 <- outer(date1[, vazao], 0:graus[1], "^")
     be1 <- data.matrix(date1[, njus, drop = FALSE])
     Ee1 <- rbind(outer(tail(vazrestrh2, 1), 0:graus[2], function(x, y) -y * x^(y - 1)),
-                outer(head(vazrestrh2, 1), 0:graus[2], function(x, y) x^y))
+                 outer(head(vazrestrh2, 1), 0:graus[2], function(x, y) x^y))
     fe1 <- rbind(pto_ext[2])
     Ge1 <- outer(vazrestrh2, 0:graus[1], function(x, y) y * x^(y - 1))
     he1 <- matrix(rep(0, length(vazrestrh2)))
@@ -444,7 +444,7 @@ fit_baseH2E1 <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
 parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
-    dat <- copybase(dat)
+    dat <- copy(dat)
 
     ngraus <- length(graus)
     if(ngraus > 2) {
@@ -469,7 +469,7 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
                   do tipo {.cls datcbase}"))
     }
 
-    if(!zero_forcado) {
+    if(missing("zero_forcado")) {
         cli::cli_warn(c("!" = "Nao foi fornecido {.arg zero_forcado} --- Utilizando TRUE"))
         zero_forcado <- TRUE
     }
@@ -504,7 +504,7 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
     ext <- rescale(ext, scales, TRUE)
 
     pto_turbmax <- (pto_turbmax - scales[[1]]) / scales[[2]]
-    vaz_ext     <- (vaz_ext - scales[[1]]) / scales[[2]]
+    vaz_ext     <- (vaz_ext - scales[[1]][1]) / scales[[2]][1]
 
     attr(dat, "vazzero") <- -scales[[1]][1] / scales[[2]][1]
 
@@ -512,4 +512,29 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
         zero_forcado = zero_forcado)
 
     return(list(call, scales))
+}
+
+fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
+
+    vazao <- njus <- NULL
+
+    vazrestr <- seq(attr(dat, "vazzero"), vaz_ext, length.out = 1000)
+
+    A <- outer(dat[, vazao], 0:graus[1], "^")
+    b <- data.matrix(dat[, njus, drop = FALSE])
+    E <- rbind(outer(tail(vazrestr, 1), 0:graus[1], function(x, y) x^y),
+               outer(tail(vazrestr, 1), 0:graus[1], function(x, y) y * x^(y - 1)))
+    f <- rbind(predict(ext, newdata = data.table(vazao = vaz_ext)),
+               predict(ext, newdata = data.table(vazao = vaz_ext), derivada = TRUE))
+    G <- outer(vazrestr, 0:graus[1], function(x, y) y * x^(y - 1))
+    h <- matrix(rep(0, length(vazrestr)))
+
+    sol    <- limSolve::lsei(A, b, E, f, G, h, fulloutput = TRUE)
+    bounds <- range(vazrestr)
+
+    out <- new_polijusU(sol$X, bounds, list(hist = dat, ext = list(ext$model)),
+        sol$covar, paste0("H1z", zero_forcado), paste0("patamar ", dat[1, pat]))
+    out <- c(out, ext)
+
+    return(out)
 }
