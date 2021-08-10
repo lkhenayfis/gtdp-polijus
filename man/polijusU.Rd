@@ -4,6 +4,7 @@
 \alias{polijusU}
 \alias{new_polijusU}
 \alias{[.polijusU}
+\alias{c.polijusU}
 \alias{print.polijusU}
 \alias{coef.polijusU}
 \alias{fitted.polijusU}
@@ -13,6 +14,8 @@
 new_polijusU(coefs, bounds, dat, vcov, tipo, tag)
 
 \method{[}{polijusU}(x, i, ...)
+
+\method{c}{polijusU}(...)
 
 \method{print}{polijusU}(x, ...)
 

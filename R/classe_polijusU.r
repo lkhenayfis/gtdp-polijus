@@ -156,16 +156,17 @@ c.polijusU <- function(...) {
         return(curvas[[1]])
     } else if(ncurvas == 2) {
 
-        bounds1      <- curvas[[1]]$bounds
-        rangebounds1 <- range(unlist(bounds1))
-        curvas[[2]]  <- curvas[[2]][rangebounds1]
+        bounds      <- lapply(curvas, "[[", "bounds")
+        rangebounds <- sapply(bounds, function(l) max(unlist(l)))
+        curvas[[2]]  <- curvas[[2]][rangebounds]
 
         coefs <- c(curvas[[1]]$coefs, curvas[[2]]$coefs)
         coefs <- lapply(coefs, function(vec) vec[vec != 0])
 
         bounds <- c(curvas[[1]]$bounds, curvas[[2]]$bounds)
 
-        dat <- list(hist = curvas[[1]]$model, ext = curvas[[2]]$model)
+        dat <- list(hist = curvas[[1]]$model[, .(vazao, njus)],
+            ext = list(curvas[[2]]$model[, .(vazao, njus)]))
 
         vcov <- as.matrix(Matrix::bdiag(curvas[[1]]$vcov, curvas[[2]]$vcov))
 
