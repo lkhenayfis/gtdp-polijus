@@ -59,7 +59,7 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
     }
 
     dat$hist <- dat$hist[, c("vazao", "njus")]
-    if(length(dat$ext) > 0) dat$ext <- dat$ext[[1]] else dat$ext <- NULL
+    if(length(dat$ext) > 0) dat$ext <- dat$ext[[1]][, .(vazao, njus)] else dat$ext <- NULL
     model  <- rbindlist(dat)
     breaks <- unlist(bounds)
     model[, poli := findInterval(vazao, breaks[!duplicated(breaks)], all.inside = TRUE)]
@@ -165,8 +165,7 @@ c.polijusU <- function(...) {
 
         bounds <- c(curvas[[1]]$bounds, curvas[[2]]$bounds)
 
-        dat <- list(hist = curvas[[1]]$model[, .(vazao, njus)],
-            ext = list(curvas[[2]]$model[, .(vazao, njus)]))
+        dat <- list(hist = curvas[[1]]$model, ext = list(curvas[[2]]$model))
 
         vcov <- as.matrix(Matrix::bdiag(curvas[[1]]$vcov, curvas[[2]]$vcov))
 
