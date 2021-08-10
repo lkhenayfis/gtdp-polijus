@@ -45,7 +45,7 @@ polinomiais}
 
 \item{...}{demais parâmetros}
 
-\item{object, x}{objeto tipo \code{polijusU}}
+\item{object}{objeto tipo \code{polijusU}}
 
 \item{derivada}{booleano indicando se deve ser calculada a derivada no lugar do valor ajustado}
 

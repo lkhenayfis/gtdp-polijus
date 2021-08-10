@@ -134,7 +134,7 @@ plot.polijusU <- function(x, ...) {
         lines(vx[poli == i], vy[poli == i], col = cores[i], lwd = 2)
     }
     legend("bottomright", inset = .02,
-        legend = c("Dados ajustados", paste0("Polinômio ", seq(npoli))),
+        legend = c("Dados ajustados", paste0("Polin\u00F4mio ", seq(npoli))),
         pch = c(16, rep(NA, npoli)), lty = c(NA, rep(1, npoli)), lwd = c(NA, rep(2, npoli)),
         col = c("deepskyblue2", cores[seq(npoli)]))
 }

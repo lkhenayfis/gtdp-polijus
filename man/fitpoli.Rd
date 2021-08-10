@@ -149,11 +149,11 @@ polibase <- fitpoli(dbase, graus = 3)
 polibase <- fitpoli(dbase, graus = c(3, 3), pto_turbmax = c(400, 32.1))
 
 # ajuste de curva base H1E1
-polibase <- fitpoli(dat, ext = "CAD", graus = c(3, 3), pto_ext = c(1000, 34))
-polibase <- fitpoli(dat, ext = 1, graus = c(3, 3), pto_ext = c(1000, 34)) # mesma coisa que acima
+polibase <- fitpoli(dbase, ext = "CAD", graus = c(3, 3), pto_ext = c(1000, 34))
+polibase <- fitpoli(dbase, ext = 1, graus = c(3, 3), pto_ext = c(1000, 34)) # mesma coisa que acima
 
 # ajuste de curva base H2E1
-polibase <- fitpoli(dat, ext = "CAD", graus = c(3, 3, 3), pto_turbmax = c(400, 32.1), 
+polibase <- fitpoli(dbase, ext = "CAD", graus = c(3, 3, 3), pto_turbmax = c(400, 32.1), 
     pto_ext = c(1000, 34))
 
 }

@@ -179,7 +179,7 @@ c.polijusU <- function(...) {
     }
 }
 
-#' @param object,x objeto tipo \code{polijusU}
+#' @param object objeto tipo \code{polijusU}
 #' @param ... demais parâmetros 
 #' 
 #' @rdname polijusU
