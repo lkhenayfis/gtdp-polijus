@@ -102,21 +102,34 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
     rangei <- range(i)
 
-    bounds <- x$bounds
-    quais  <- sapply(bounds, function(v) any(sapply(rangei, function(k) (v[1] <= k) & (k < v[2]))))
+    bounds      <- x$bounds
+    rangebounds <- range(unlist(bounds))
+    if(rangei[1] < rangebounds[1]) {
+        rangei[1] <- rangebounds[1]
+        warn <- TRUE
+    } else if(rangei[2] > rangebounds[2]) {
+        rangei[2] <- rangebounds[2]
+        warn <- TRUE
+    } else {
+        warn <- FALSE
+    }
+    if(warn) {
+        cli::cli_warn(c("!" = "{.arg i} contem valores fora do dominio de aplicacao da curva fornecida",
+            " " = "reduzindo para os limites da curva"))
+    }
 
-    bounds <- bounds[quais]
-    bounds[[1]][1]              <- max(rangei[1], bounds[[1]][1])
-    bounds[[length(bounds)]][2] <- min(rangei[2], bounds[[length(bounds)]][2])
+    quais  <- sapply(bounds, function(v) any(sapply(rangei, function(k) (v[1] <= k) & (k <= v[2]))))
+
+    quaisint <- which(quais)
+    bounds[[head(quaisint, 1)]][1] <- rangei[1]
+    bounds[[tail(quaisint, 1)]][2] <- rangei[2]
 
     # quando o subset coincide com os limites de uma das partes da curva o corte volta com um
     # polinomio de vaz_min == vaz_max. Teoricamente isso esta certo, pois a aplicacao dos polinomios
     # e [vaz_min, vaz_max), mas como existe continuidade este de dominio singular pode ser omitido
     singlebound <- sapply(bounds, function(vec) vec[1] == vec[2])
-    if(any(singlebound)) {
-        quais <- quais & !singlebound
-        bounds <- bounds[quais]
-    }
+    if(any(singlebound)) quais  <- quais & !singlebound
+    bounds <- bounds[quais]
 
     npoli  <- sum(quais)
 
