@@ -90,6 +90,82 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
 # METODOS ------------------------------------------------------------------------------------------
 
+#' @param x objeto \code{polijusU}
+#' @param i vazao. Pode ser escalar ou um vetor; no caso de vetor serao usados os limites
+#' @param ... demais parametros
+#' 
+#' @rdname polijusU
+#' 
+#' @export
+
+`[.polijusU` <- function(x, i, ...) {
+
+    rangei <- range(i)
+
+    bounds <- x$bounds
+    quais  <- sapply(bounds, function(v) any(sapply(rangei, function(k) (v[1] <= k) & (k < v[2]))))
+
+    bounds <- bounds[quais]
+    bounds[[1]][1]              <- max(rangei[1], bounds[[1]][1])
+    bounds[[length(bounds)]][2] <- min(rangei[2], bounds[[length(bounds)]][2])
+
+    # quando o subset coincide com os limites de uma das partes da curva o corte volta com um
+    # polinomio de vaz_min == vaz_max. Teoricamente isso esta certo, pois a aplicacao dos polinomios
+    # e [vaz_min, vaz_max), mas como existe continuidade este de dominio singular pode ser omitido
+    singlebound <- sapply(bounds, function(vec) vec[1] == vec[2])
+    if(any(singlebound)) {
+        quais <- quais & !singlebound
+        bounds <- bounds[quais]
+    }
+
+    npoli  <- sum(quais)
+
+    coefs  <- lapply(x$coefs[quais], function(vec) vec[vec != 0])
+    bounds <- bounds
+    vcov   <- x$vcov[rep(quais, each = 5), rep(quais, each = 5)]
+    dat    <- list(hist = x$model[vazao %between% rangei], ext = NULL)
+
+    new_polijusU(coefs, bounds, dat, vcov, attr(x, "tipo"), attr(x, "tag"))
+}
+
+#' @param ... objetos \code{polijusU} para concatenar
+#' 
+#' @rdname polijusU
+#' 
+#' @export
+
+c.polijusU <- function(...) {
+
+    curvas  <- list(...)
+    ncurvas <- length(curvas)
+
+    if(ncurvas == 1) {
+        return(curvas[[1]])
+    } else if(ncurvas == 2) {
+
+        bounds1      <- curvas[[1]]$bounds
+        rangebounds1 <- range(unlist(bounds1))
+        curvas[[2]]  <- curvas[[2]][rangebounds1]
+
+        coefs <- c(curvas[[1]]$coefs, curvas[[2]]$coefs)
+        coefs <- lapply(coefs, function(vec) vec[vec != 0])
+
+        bounds <- c(curvas[[1]]$bounds, curvas[[2]]$bounds)
+
+        dat <- list(hist = curvas[[1]]$model, ext = curvas[[2]]$model)
+
+        vcov <- as.matrix(Matrix::bdiag(curvas[[1]]$vcov, curvas[[2]]$vcov))
+
+        tipo <- attr(curvas[[1]], "tipo")
+        tag  <- attr(curvas[[1]], "tag")
+
+        return(new_polijusU(coefs, bounds, dat, vcov, tipo, tag))
+    } else {
+
+        c(curvas[[1]], do.call(c, curvas[-1]))
+    }
+}
+
 #' @param object,x objeto tipo \code{polijusU}
 #' @param ... demais parâmetros 
 #' 

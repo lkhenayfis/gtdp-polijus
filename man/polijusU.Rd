@@ -3,6 +3,7 @@
 \name{polijusU}
 \alias{polijusU}
 \alias{new_polijusU}
+\alias{[.polijusU}
 \alias{print.polijusU}
 \alias{coef.polijusU}
 \alias{fitted.polijusU}
@@ -10,6 +11,8 @@
 \title{Objeto \code{polijusU}}
 \usage{
 new_polijusU(coefs, bounds, dat, vcov, tipo, tag)
+
+\method{[}{polijusU}(x, i, ...)
 
 \method{print}{polijusU}(x, ...)
 
@@ -32,6 +35,10 @@ polinomiais}
 \item{tipo}{o tipo de ajuste}
 
 \item{tag}{uma tag para identificação de qual curva se trata no print}
+
+\item{x}{objeto \code{polijusU}}
+
+\item{i}{vazao. Pode ser escalar ou um vetor; no caso de vetor serao usados os limites}
 
 \item{...}{demais parâmetros}
 
