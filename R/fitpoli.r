@@ -185,9 +185,13 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
         ngraus <- 3
     }
 
-    temext <- !missing("ext")
-    temptm <- !missing("pto_turbmax")
-    tempve <- !missing("pto_ext")
+    # missing nao functiona com chamadas locais ou aninhadas de funcao (como vai ser o caso dessa
+    # dentro da otimizacao de hiperparametros) de modo que o teste de parametro passado ou nao
+    # precisa ser mais manual
+    # quando usada dentro da opt, os argumentos nao passados vem como NA
+    temext <- !missing("ext") && !all(is.na(ext))
+    temptm <- !missing("pto_turbmax") && !all(is.na(pto_turbmax))
+    tempve <- !missing("pto_ext") && !all(is.na(pto_ext))
 
     if(!(tempve == temext)) {
         warning("Foi fornecido apenas um de 'pto_ext' e 'ext' --- ",
