@@ -507,6 +507,7 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
     vaz_ext     <- (vaz_ext - scales[[1]][1]) / scales[[2]][1]
 
     attr(dat, "vazzero") <- -scales[[1]][1] / scales[[2]][1]
+    attr(dat, "nivref")  <- dat[1, (as.numeric(pat) - scales[[1]][2]) / scales[[2]][2]]
 
     call <- list(func, dat = dat, ext = ext, graus = graus, pto_turbmax = pto_turbmax, vaz_ext = vaz_ext,
         zero_forcado = zero_forcado)
@@ -526,6 +527,10 @@ fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
                outer(tail(vazrestr, 1), 0:graus[1], function(x, y) y * x^(y - 1)))
     f <- rbind(predict(ext, newdata = data.table(vazao = vaz_ext)),
                predict(ext, newdata = data.table(vazao = vaz_ext), derivada = TRUE))
+    if(zero_forcado) {
+        E <- rbind(outer(head(vazrestr, 1), 0:graus[1], function(x, y) x^y), E)
+        f <- rbind(attr(dat, "nivref"), f)
+    }
     G <- outer(vazrestr, 0:graus[1], function(x, y) y * x^(y - 1))
     h <- matrix(rep(0, length(vazrestr)))
 
