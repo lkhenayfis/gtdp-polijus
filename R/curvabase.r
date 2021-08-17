@@ -54,6 +54,7 @@ extraibase <- function(dat, subset = NULL) {
     })
 
     dbase <- list(hist = dbase, ext = lextrap)
+    attr(dbase, "vazef") <- attr(dat, "vazef")
     class(dbase) <- "datcbase"
 
     return(dbase)
