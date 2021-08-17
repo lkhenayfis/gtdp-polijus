@@ -22,7 +22,7 @@ HIDR <- cbind(USI = HIDR[, 1], VAZEF = vazef, HIDR[, colpvn])
 
 dummy <- HIDR[1, ]
 dummy$USI <- 999
-dummy$VAZEF <- 950
+dummy$VAZEF <- 440
 dummy[, 3] <- 34
 dummy[, 4] <- 1 / 1400
 
