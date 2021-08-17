@@ -537,8 +537,9 @@ fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
     sol    <- limSolve::lsei(A, b, E, f, G, h, fulloutput = TRUE)
     bounds <- range(vazrestr)
 
-    out <- new_polijusU(sol$X, bounds, list(hist = dat, ext = list(ext$model)),
+    out <- new_polijusU(sol$X, bounds, list(hist = dat, ext = NULL),
         sol$covar, paste0("H1z", zero_forcado * 1), paste0("patamar ", dat[1, pat]))
+    ext$model <- ext$model[0]
     out <- c(out, ext)
 
     return(out)
@@ -588,8 +589,9 @@ fit_indH2 <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
     bounds <- list(range(vazrestrh1), range(vazrestrh2))
 
-    out <- new_polijusU(coef, bounds, list(hist = dat, ext = list(ext$model)),
+    out <- new_polijusU(coef, bounds, list(hist = dat, ext = NULL),
         sol$covar, paste0("H1z", zero_forcado * 1), paste0("patamar ", dat[1, pat]))
+    ext$model <- ext$model[0]
     out <- c(out, ext)
 
     return(out)
