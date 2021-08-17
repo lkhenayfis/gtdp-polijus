@@ -538,7 +538,58 @@ fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
     bounds <- range(vazrestr)
 
     out <- new_polijusU(sol$X, bounds, list(hist = dat, ext = list(ext$model)),
-        sol$covar, paste0("H1z", zero_forcado), paste0("patamar ", dat[1, pat]))
+        sol$covar, paste0("H1z", zero_forcado * 1), paste0("patamar ", dat[1, pat]))
+    out <- c(out, ext)
+
+    return(out)
+}
+
+fit_indH2 <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
+
+    vazao <- njus <- NULL
+
+    vazrestrh1 <- seq(attr(dat, "vazzero"), pto_turbmax[1], length.out = 1000)
+
+    Ah1 <- outer(dat[, vazao], 0:graus[1], "^")
+    bh1 <- data.matrix(dat[, njus, drop = FALSE])
+    Eh1 <- rbind(outer(tail(vazrestrh1, 1), 0:graus[1], function(x, y) x^y))
+    fh1 <- rbind(pto_turbmax[2])
+    if(zero_forcado) {
+        Eh1 <- rbind(outer(head(vazrestrh1, 1), 0:graus[1], function(x, y) x^y), Eh1)
+        fh1 <- rbind(attr(dat, "nivref"), fh1)
+    }
+    Gh1 <- outer(vazrestrh1, 0:graus[1], function(x, y) y * x^(y - 1))
+    hh1 <- matrix(rep(0, length(vazrestrh1)))
+
+    vazrestrh2 <- seq(pto_turbmax[1], vaz_ext, length.out = 1000)
+
+    Ah2 <- outer(dat[, vazao], 0:graus[2], "^")
+    bh2 <- data.matrix(dat[, njus, drop = FALSE])
+    Eh2 <- rbind(outer(head(vazrestrh2, 1), 0:graus[2], function(x, y) x^y),
+                 outer(tail(vazrestrh2, 1), 0:graus[2], function(x, y) x^y),
+                 outer(tail(vazrestrh2, 1), 0:graus[2], function(x, y) y * x^(y - 1)))
+    fh2 <- rbind(pto_turbmax[2],
+                 predict(ext, newdata = data.table(vazao = vaz_ext)),
+                 predict(ext, newdata = data.table(vazao = vaz_ext), derivada = TRUE))
+    Gh2 <- outer(vazrestrh2, 0:graus[2], function(x, y) y * x^(y - 1))
+    hh2 <- matrix(rep(0, length(vazrestrh2)))
+
+    A <- Matrix::bdiag(Ah1, Ah2)
+    b <- rbind(bh1, bh2)
+    E <- Matrix::bdiag(Eh1, Eh2)
+    f <- rbind(fh1, fh2)
+    G <- Matrix::bdiag(Gh1, Gh2)
+    h <- Matrix::Matrix(rbind(hh1, hh2))
+
+    sol    <- limSolve::lsei(A, b, E, f, G, h, fulloutput = TRUE)
+
+    breaks <- c(1, graus[1] + 1, graus[1] + 2, graus[1] + graus[2] + 2)
+    coef   <- lapply(seq(graus), function(i) sol$X[breaks[2 * i - 1]:breaks[2 * i]])
+
+    bounds <- list(range(vazrestrh1), range(vazrestrh2))
+
+    out <- new_polijusU(coef, bounds, list(hist = dat, ext = list(ext$model)),
+        sol$covar, paste0("H1z", zero_forcado * 1), paste0("patamar ", dat[1, pat]))
     out <- c(out, ext)
 
     return(out)
