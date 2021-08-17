@@ -9,6 +9,7 @@
 \alias{coef.polijusU}
 \alias{fitted.polijusU}
 \alias{predict.polijusU}
+\alias{residuals.polijusU}
 \title{Objeto \code{polijusU}}
 \usage{
 new_polijusU(coefs, bounds, dat, vcov, tipo, tag)
@@ -24,6 +25,8 @@ new_polijusU(coefs, bounds, dat, vcov, tipo, tag)
 \method{fitted}{polijusU}(object, derivada = FALSE, ...)
 
 \method{predict}{polijusU}(object, newdata, derivada = FALSE, ...)
+
+\method{residuals}{polijusU}(object, ...)
 }
 \arguments{
 \item{coefs}{lista de um, dois ou três elementos contendo coeficientes ajustados das partes

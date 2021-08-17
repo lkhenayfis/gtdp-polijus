@@ -294,6 +294,20 @@ predict.polijusU <- function(object, newdata, derivada = FALSE, ...) {
     return(predicted)
 }
 
+#' @rdname polijusU
+#' 
+#' @export 
+
+residuals.polijusU <- function(object, ...) {
+
+    fitted <- fitted(object)
+    data <- object$model[, .(njus - fitted, poli)]
+
+    out <- split(data$V1, data$poli)
+
+    return(out)
+}
+
 # HELPERS ------------------------------------------------------------------------------------------
 
 rescale <- function(polijus, scales, inv = FALSE) {
