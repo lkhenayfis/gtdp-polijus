@@ -308,6 +308,34 @@ residuals.polijusU <- function(object, ...) {
     return(out)
 }
 
+#' @rdname polijusU
+#' 
+#' @export
+
+summary.polijusU <- function(object, ...) {
+
+    extra <- list(...)
+    maispoli <- sapply(extra, function(x) class(x) == "polijusU")
+
+    if(any(maispoli)) {
+        object <- c(list(object), extra[maispoli])
+    } else {
+        object <- list(object)
+    }
+
+    out <- lapply(object, function(obj) {
+        tag  <- attr(obj, "tag")
+        tipo <- attr(obj, "tipo")
+        npoli <- attr(obj, "npoli")
+        graus <- paste0("(", paste0(attr(obj, "graus"), collapse = ", "), ")")
+        erro <- mean(unlist(residuals(obj))^2)
+
+        data.table(tag = tag, tipo = tipo, npoli = npoli, graus = graus, MSE = erro)
+    })
+
+    return(rbindlist(out))
+}
+
 # HELPERS ------------------------------------------------------------------------------------------
 
 rescale <- function(polijus, scales, inv = FALSE) {
