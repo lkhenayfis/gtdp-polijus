@@ -180,7 +180,8 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
     ngraus <- length(graus)
     if(ngraus > 3) {
-        warning("'graus' possui mais de tres elementos -- reduzindo para apenas os tres primeiros")
+        msg <- paste0("{.arg graus} possui mais de tres elementos -- reduzindo para apenas os tres primeiros")
+        cli::cli_warn(c("!" = msg))
         graus  <- graus[1:3]
         ngraus <- 3
     }
@@ -194,13 +195,13 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
     tempve <- !missing("pto_ext") && !all(is.na(pto_ext))
 
     if(!(tempve == temext)) {
-        warning("Foi fornecido apenas um de 'pto_ext' e 'ext' --- ",
-            "\nSe deseja ajustar um polinomio para dados de extensao, selecione o conjunto atraves",
-            " do parametro 'ext' e um ponto de conexao com os dados historicos atraves",
-            " do parametro 'pto_ext' (veja ?polijus::fitpoli)")
-        temext <- FALSE
-        tempve <- FALSE
+        ignore <- ifelse(temext, "{.arg ext} sem {.arg pto_ext}. {.arg ext} ",
+            "{.arg pto_ext} sem {.arg ext}. {.arg pto_ext}")
+        msg <- paste0("Foi fornecido ", ignore, " sera ignorado (veja {.code ?polijus::fitpoli})")
+        cli::cli_warn(c("!" = msg))
     }
+
+    if(!(tempve & temext)) sufext <- FALSE else sufext <- TRUE
 
     # Identificacao de tipo de ajuste
     if((ngraus == 1)) {
@@ -209,9 +210,8 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
         extras <- structure(c(temext, temptm, tempve), names = c("ext", "pto_turbmax", "pto_ext"))
         if(any(extras)) {
             ignore <- names(extras)[extras]
-            warning("'graus' contem apenas um elemento, indicando polinomio unico -- os parametros (",
-                ignore, ") serao ignorados", "\nPara ajuste de multiplos polinomios forneca ate tres ",
-                "elementos em graus, acompanhados dos parametros adequados (veja ?polijus::fitpoli)")
+            cli::cli_warn(c("!" = "{.arg graus} contem apenas um elemento, indicando polinomio unico.
+                {.arg {ignore}} sera{?o} ignorado{?s} \t (veja {.code ?polijus::fitpoli})"))
         }
 
         func <- "fit_baseH1"
@@ -223,14 +223,12 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
         # Caso de dois polinomios -- pode ser H1E1 ou H2, dando preferencia para o primeiro
 
-        if(temext) {
+        if(sufext) {
 
             if(temptm) {
-                warning("'graus' contem 2 elementos, indicando ajuste de dois polinomios, porem tanto ",
-                    "'ext' quanto 'pto_turbmax' foram fornecidos -- 'pto_turbmax' sera ignorado em favor",
-                    " do ajuste de um polinomio para dados historicos e outro para dados de extensao",
-                    "\n Se deseja ajustar dois polinomios para dados historicos e nenhum para exntensao,",
-                    " forneca apenas 'pto_turbmax' (veja ?polijus::fitpoli)")
+                cli::cli_warn(c("!" = "{.arg graus} contem 2 elementos, indicando dois polinomios,
+                    porem tanto {.arg ext} quanto {.arg pto_turbmax} foram fornecidos.
+                    {.arg pto_turbmax} sera ignorado (veja {.code ?polijus::fitpoli})"))
             }
 
             func <- "fit_baseH1E1"
@@ -239,10 +237,11 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
         } else {
 
             if(!temptm) {
-                stop("'graus' contem 2 elementos, indicando ajuste de dois polinomios, porem nem ",
-                    "'ext' nem 'pto_turbmax' foram fornecidos",
-                    "\n Se deseja ajustar dois polinomios para dados historicos ou um para historico ",
-                    "e outro para extensao, forneca 'pto_turbmax' ou 'ext', respectivamente (veja ?polijus::fitpoli)")
+                extras <- structure(c(temext, temptm, tempve), names = c("ext", "pto_turbmax", "pto_ext"))
+                faltam <- names(extras)[!extras]
+                cli::cli_abort(c("Inconsistencia de argumentos",
+                    "x" = "{.arg graus} contem 2 elementos, indicando ajuste de dois
+                    polinomios, porem {.arg {faltam}} nao foram fornecidos (veja {.code ?polijus::fitpoli})"))
             }
 
             func <- "fit_baseH2"
@@ -253,11 +252,12 @@ parseargsbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
         # Caso de tres polinomios
 
-        if(!temext | !temptm) {
-            stop("'graus' contem 3 elementos, indicando ajuste de tres polinomios, porem ",
-                "'ext' e 'pto_turbmax' nao foram fornecidos",
-                "\n Se deseja ajustar dois polinomios para dados historicos ",
-                "e outro para extensao, forneca 'pto_turbmax' e 'ext' (veja ?polijus::fitpoli)")
+        if(!sufext | !temptm) {
+            extras <- structure(c(temext, temptm, tempve), names = c("ext", "pto_turbmax", "pto_ext"))
+            faltam <- names(extras)[!extras]
+            cli::cli_abort(c("Incosistencia de argumentos", 
+                "x" = "{.arg graus} contem 3 elementos, indicando ajuste de tres polinomios, porem
+                {.arg {faltam}} nao fo{?i/ram} fornecido{?s} (veja {.code ?polijus::fitpoli})"))
         }
 
         func <- "fit_baseH2E1"
@@ -452,12 +452,10 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
     ngraus <- length(graus)
     if(ngraus > 2) {
-        msg <- paste0("{.arg graus} possui mais de dois elementos -- reduzindo para apenas os tres primeiros")
-        cli::cli_warn(c("!" = msg,
-            " " = "Se esta tentando ajustar uma curva base, certifique-se de que {.arg dat} e um objeto
-                  do tipo {.cls datcbase}"))
-        graus  <- graus[1:3]
-        ngraus <- 3
+        msg <- paste0("{.arg graus} possui mais de dois elementos -- reduzindo para apenas os dois primeiros")
+        cli::cli_warn(c("!" = msg))
+        graus  <- graus[1:2]
+        ngraus <- 2
     }
 
     temext <- !missing("ext")
@@ -466,11 +464,11 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
     temzrf <- !missing("zero_forcado")
 
     if(!(temext & tempve)) {
-        cli::cli_abort(c("Nao foi fornecido {.arg ext} e/ou {.arg vaz_ext}",
-            "x" = "Ajustes de polinomios individuais exigem uma curva base e vazao na qual convergir
-             (veja {.code ?polijus::fitpoli})",
-            " " = "Se esta tentando ajustar uma curva base, certifique-se de que {.arg dat} e um objeto
-                  do tipo {.cls datcbase}"))
+        ignore <- ifelse(temext, "{.arg ext} sem {.arg vaz_ext}", "{.arg vaz_ext} sem {.arg ext}")
+        msg <- paste0("Foi fornecido ", ignore, " -- ambos sao necessarios para ajuste de curva ",
+                "individual (veja {.code ?polijus::fitpoli})")
+        cli::cli_abort(c("Inconsistencia de argumentos", 
+            "x" = msg))
     }
 
     if(missing("zero_forcado")) {
@@ -482,9 +480,8 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
         # Caso de polinomio unico - ignora pto_turbmax
         if(temptm) {
-            cli::cli_warn(c("!" = "{.arg graus} contem apenas um elemento, indicando polinomio unico",
-                " " = "O parametro {.arg pto_turbmax} sera ignorado. Para ajuste de dois poliomios
-                 forneca dois elementos em {.arg graus} (veja {.code ?polijus::fitpoli})"))
+            cli::cli_warn(c("!" = "{.arg graus} contem apenas um elemento, indicando polinomio unico.
+                {.arg pto_turbmax} sera ignorado (veja {.code ?polijus::fitpoli})"))
         }
 
         func <- "fit_indH1"
@@ -493,9 +490,9 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
         if(!temptm) {
 
-            cli::cli_abort(c("Nao foi fornecido {.arg pto_turbmax}", 
-                "x" = "{.arg graus} contem dois elementos, indicando ajuste de dois polinomios, mas
-                nao foi fornecido ponto de conexao (veja {.code ?polijus::fitpoli})"))
+            cli::cli_abort(c("Inconsistencia de argumentos", 
+                "x" = "{.arg graus} contem dois elementos, indicando ajuste de dois polinomios, porem
+                nao foi fornecido {.arg pto_turbmax} (veja {.code ?polijus::fitpoli})"))
         }
 
         func <- "fit_indH2"
