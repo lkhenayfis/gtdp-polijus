@@ -97,5 +97,9 @@ optpoli.datcbase <- function(dat, ext, graus, pto_turbmax0, pto_ext0, opcoes) {
 
     out <- out[!sapply(out, is.null)]
 
+    erros <- sapply(out, function(x) mean(unlist(residuals(x))^2))
+
+    out <- out[order(erros)]
+
     return(out)
 }
