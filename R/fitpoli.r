@@ -316,11 +316,11 @@ fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
 
     vazrestrh2 <- seq(pto_turbmax[1], max(dath2[, vazao]), length.out = 1000)
 
-    Ah2 <- outer(dath2[, vazao], 0:graus[1], "^")
+    Ah2 <- outer(dath2[, vazao], 0:graus[2], "^")
     bh2 <- data.matrix(dath2[, njus, drop = FALSE])
     Eh2 <- outer(head(vazrestrh2, 1), 0:graus[2], function(x, y) x^y)
     fh2 <- pto_turbmax[2]
-    Gh2 <- outer(vazrestrh2, 0:graus[1], function(x, y) y * x^(y - 1))
+    Gh2 <- outer(vazrestrh2, 0:graus[2], function(x, y) y * x^(y - 1))
     hh2 <- matrix(rep(0, length(vazrestrh2)))
 
     A <- Matrix::bdiag(Ah1, Ah2)
@@ -360,12 +360,12 @@ fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
 
     vazrestrh2 <- seq(pto_ext[1], max(date1[, vazao]), length.out = 1000)
 
-    Ae1 <- outer(date1[, vazao], 0:graus[1], "^")
+    Ae1 <- outer(date1[, vazao], 0:graus[2], "^")
     be1 <- data.matrix(date1[, njus, drop = FALSE])
     Ee1 <- rbind(outer(tail(vazrestrh2, 1), 0:graus[2], function(x, y) -y * x^(y - 1)),
                  outer(head(vazrestrh2, 1), 0:graus[2], function(x, y) x^y))
     fe1 <- rbind(pto_ext[2])
-    Ge1 <- outer(vazrestrh2, 0:graus[1], function(x, y) y * x^(y - 1))
+    Ge1 <- outer(vazrestrh2, 0:graus[2], function(x, y) y * x^(y - 1))
     he1 <- matrix(rep(0, length(vazrestrh2)))
 
     A <- Matrix::bdiag(Ah1, Ae1)
@@ -404,25 +404,25 @@ fit_baseH2E1 <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
     vazrestrh2 <- seq(pto_turbmax[1], pto_ext[1], length.out = 1000)
 
-    Ah2 <- outer(dath2[, vazao], 0:graus[1], "^")
+    Ah2 <- outer(dath2[, vazao], 0:graus[2], "^")
     bh2 <- data.matrix(dath2[, njus, drop = FALSE])
     Eh2 <- rbind(outer(head(vazrestrh2, 1), 0:graus[2], function(x, y) x^y),
                  outer(tail(vazrestrh2, 1), 0:graus[2], function(x, y) x^y),
                  outer(tail(vazrestrh2, 1), 0:graus[2], function(x, y) y * x^(y - 1)))
     fh2 <- rbind(pto_turbmax[2], pto_ext[2], 0)
-    Gh2 <- outer(vazrestrh2, 0:graus[1], function(x, y) y * x^(y - 1))
+    Gh2 <- outer(vazrestrh2, 0:graus[2], function(x, y) y * x^(y - 1))
     hh2 <- matrix(rep(0, length(vazrestrh2)))
 
     date1 <- dat$ext[[1]]
 
     vazrestre1 <- seq(pto_ext[1], max(date1[, vazao]), length.out = 1000)
 
-    Ae1 <- outer(date1[, vazao], 0:graus[1], "^")
+    Ae1 <- outer(date1[, vazao], 0:graus[3], "^")
     be1 <- data.matrix(date1[, njus, drop = FALSE])
     Ee1 <- rbind(outer(tail(vazrestre1, 1), 0:graus[3], function(x, y) -y * x^(y - 1)),
                  outer(head(vazrestre1, 1), 0:graus[3], function(x, y) x^y))
     fe1 <- rbind(pto_ext[2])
-    Ge1 <- outer(vazrestre1, 0:graus[1], function(x, y) y * x^(y - 1))
+    Ge1 <- outer(vazrestre1, 0:graus[3], function(x, y) y * x^(y - 1))
     he1 <- matrix(rep(0, length(vazrestre1)))
 
     A <- Matrix::bdiag(Ah1, Ah2, Ae1)
