@@ -136,6 +136,7 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
     coefs  <- lapply(x$coefs[quais], function(vec) vec[vec != 0])
     bounds <- bounds
     vcov   <- x$vcov[rep(quais, each = 5), rep(quais, each = 5)]
+    vcov   <- vcov[!apply(vcov, 1, function(v) all(v == 0)), !apply(vcov, 2, function(v) all(v == 0))]
     dat    <- list(hist = x$model[vazao %between% rangei], ext = NULL)
 
     new_polijusU(coefs, bounds, dat, vcov, attr(x, "tipo"), attr(x, "tag"))
@@ -167,7 +168,11 @@ c.polijusU <- function(...) {
 
         dat <- list(hist = curvas[[1]]$model, ext = list(curvas[[2]]$model))
 
-        vcov <- as.matrix(Matrix::bdiag(curvas[[1]]$vcov, curvas[[2]]$vcov))
+        vcov <- lapply(curvas, "[[", "vcov")
+        vcov <- lapply(vcov, function(m) {
+            m[!apply(m, 1, function(v) all(v == 0)), !apply(m, 2, function(v) all(v == 0))]
+        })
+        vcov <- as.matrix(Matrix::bdiag(vcov[[1]], vcov[[2]]))
 
         tipo <- attr(curvas[[1]], "tipo")
         tag  <- attr(curvas[[1]], "tag")
