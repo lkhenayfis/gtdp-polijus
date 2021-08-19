@@ -458,10 +458,12 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
         ngraus <- 2
     }
 
-    temext <- !missing("ext")
-    temptm <- !missing("pto_turbmax")
-    tempve <- !missing("vaz_ext")
-    temzrf <- !missing("zero_forcado")
+    # ver comentario em parseargsbase
+
+    temext <- !missing("ext") && !all(is.na(ext))
+    temptm <- !missing("pto_turbmax") && !all(is.na(pto_turbmax))
+    tempve <- !missing("vaz_ext") && !all(is.na(vaz_ext))
+    temzrf <- !missing("zero_forcado") && !all(is.na(zero_forcado))
 
     if(!(temext & tempve)) {
         ignore <- ifelse(temext, "{.arg ext} sem {.arg vaz_ext}", "{.arg vaz_ext} sem {.arg ext}")
@@ -471,7 +473,7 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
             "x" = msg))
     }
 
-    if(missing("zero_forcado")) {
+    if(missing("zero_forcado") | is.na(zero_forcado)) {
         cli::cli_warn(c("!" = "Nao foi fornecido {.arg zero_forcado} --- Utilizando TRUE"))
         zero_forcado <- TRUE
     }
