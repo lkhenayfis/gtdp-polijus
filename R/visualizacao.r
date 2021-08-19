@@ -126,8 +126,11 @@ plot.polijusU <- function(x, ...) {
         titulo <- paste0("Ajuste do ", titulo)
     }
 
+    rangex <- c(min(min(vx), min(x$model$vazao)), max(max(vx), max(x$model$vazao)))
+    rangey <- c(min(min(vy), min(x$model$njus)),  max(max(vy), max(x$model$njus)))
+
     plot(x$model[, c("vazao", "njus")], panel.first = grid(col = "grey85"),
-        col = "deepskyblue2", pch = 16,
+        col = "deepskyblue2", pch = 16, xlim = rangex, ylim = rangey,
         xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]",
         main = titulo)
     for(i in seq(npoli)) {
