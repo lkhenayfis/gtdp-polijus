@@ -40,10 +40,12 @@ setDT(HIDR)
 
 arq <- "X:/Ciclo 2 - 2010 a 2019/Dados recebidos/_EPE/Vazoes Maximas Historicas 1931-2018.xlsx"
 VAZMAX <- readxl::read_xlsx(arq)[, -2]
+
+dummy <- data.frame(CodNW = 999, Qmaxhist = 1000)
+VAZMAX <- rbind(VAZMAX, dummy)
 setDT(VAZMAX)
 colnames(VAZMAX) <- c("USI", "VAZMAX")
 setorder(VAZMAX, USI)
-
 
 # ESCRITA DOS DADOS INTERNOS -----------------------------------------------------------------------
 
