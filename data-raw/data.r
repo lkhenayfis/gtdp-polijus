@@ -4,7 +4,7 @@ devtools::load_all()
 
 # Preparo do hidr **COM CADASTRO ANTIGO** ----------------------------------------------------------
 
-HIDR <- read.csv("data-raw/HIDR.csv", fill = TRUE, sep = ";", dec = ",", stringsAsFactors = FALSE)
+HIDR <- read.csv("data-raw/HIDR_PMO_Jun2021.csv", fill = TRUE, sep = ";", dec = ",", stringsAsFactors = FALSE)
 
 # Identifica quais colunas contem numero de maquinas por grupo
 colnummaq <- grep("X\\.Maq\\.[[:digit:]]\\.", colnames(HIDR))
@@ -15,16 +15,23 @@ colvazef <- grep("QEf\\.[[:digit:]]\\.", colnames(HIDR))
 # Vazao efetiva da usina
 vazef <- rowSums(HIDR[, colnummaq] * HIDR[, colvazef])
 
+# Namax da usina a jusante
+namaxjus <- as.numeric(sub(" - .*", "", HIDR[, "Jusante"]))
+namaxjus <- match(namaxjus, HIDR[, 1])
+namaxjus <- HIDR[namaxjus, 11]
+namaxjus[namaxjus == 0] <- NA_real_
+
 # Identifica as colunas que contem os coeficientes dos polinomios de jusante
 colpvn <- grep("PJA[[:digit:]]\\.[[:digit:]]", colnames(HIDR))
 
-HIDR <- cbind(USI = HIDR[, 1], VAZEF = vazef, HIDR[, colpvn])
+HIDR <- cbind(USI = HIDR[, 1], VAZEF = vazef, NAMAX = namaxjus, HIDR[, colpvn])
 
 dummy <- HIDR[1, ]
 dummy$USI <- 999
 dummy$VAZEF <- 440
-dummy[, 3] <- 34
-dummy[, 4] <- 1 / 1400
+dummy$NAMAX <- 34
+dummy[, 4] <- 34
+dummy[, 5] <- 1 / 1400
 
 HIDR <- rbind(HIDR, dummy)
 setDT(HIDR)
