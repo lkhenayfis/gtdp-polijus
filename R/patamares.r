@@ -71,6 +71,35 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
     return(dat)
 }
 
+#' Extração de patamares
+#' 
+#' Função para extração de até quatro patamares para ajuste individual
+#' 
+#' A determinação de quais patamares sao ajustados através de curvas individuais se da visando 
+#' encontrar um conjunto de curvas que, junto da curva base, estão o mais igualmente distribuídas 
+#' pela dispersão de dados observados quanto possível. Atualmente o modelo DECOMP é capaz de lidar 
+#' com até cinco famílias de polinômios -- contando a curva base, restam então no máximo quatro 
+#' curvas associadas a patamares individuais do reservatório a jusante.
+#' 
+#' Uma restrição que deve ser atendida é a inclusão de uma curva associada ao nível máximo normal do
+#' reservatório a jusante. É testado se esse patamar está representado nos dados estáveis filtrados
+#' e, caso negativo, será realizada uma extrapolação dos dados históricos observados de modo a gerar
+#' o novo patamar.
+#' 
+#' @param dat objeto do tipo \code{datpoli}
+#' @param polibase objeto do tipo \code{polijusU} contendo ajuste da curva base
+#' @param min_reg número mínimo de registros para eligibilidade a ajuste individual
+#' @param quais vetor de strings indicando quais patamares extrair
+#' 
+#' @return lista de até quatro elementos contendo dados isolados de patamares
+#' 
+#' @export
+
+extraipats <- function(dat, polibase, min_reg, quais) {
+
+
+}
+
 # HELPERS ------------------------------------------------------------------------------------------
 
 tratapats <- function(dpat, tol) {

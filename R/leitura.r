@@ -117,11 +117,13 @@ new_datpoli <- function(path, cod, hist, ext) {
     hist <- tratahist(hist)
     ext  <- trataext(ext)
 
-    vazmax <- VAZMAX[USI == cod, VAZMAX]
-
     vazef <- unlist(HIDR[USI == cod, VAZEF])
 
-    coef <- unlist(HIDR[USI == cod, c(3:7)])
+    vazmax <- VAZMAX[USI == cod, VAZMAX]
+
+    namax <- HIDR[USI == cod, NAMAX]
+
+    coef <- unlist(HIDR[USI == cod, c(4:8)])
     fun  <- function(x) coef[1] + coef[2] * x + coef[3] * x^2 + coef[4] * x^3 + coef[5] * x^4
     ext  <- c(list(CAD = fun), ext)
 
@@ -132,6 +134,7 @@ new_datpoli <- function(path, cod, hist, ext) {
     attr(new, "cod")   <- cod
     attr(new, "vazef") <- vazef
     attr(new, "vazmax") <- vazmax
+    attr(new, "namax") <- namax
     attr(new, "filtravazest") <- FALSE
     attr(new, "classfiltrapats") <- FALSE
     attr(new, "evalremanso") <- FALSE
