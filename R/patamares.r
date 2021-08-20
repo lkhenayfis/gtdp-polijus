@@ -81,11 +81,6 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 #' com até cinco famílias de polinômios -- contando a curva base, restam então no máximo quatro 
 #' curvas associadas a patamares individuais do reservatório a jusante.
 #' 
-#' Uma restrição que deve ser atendida é a inclusão de uma curva associada ao nível máximo normal do
-#' reservatório a jusante. É testado se esse patamar está representado nos dados estáveis filtrados
-#' e, caso negativo, será realizada uma extrapolação dos dados históricos observados de modo a gerar
-#' o novo patamar.
-#' 
 #' @param dat objeto do tipo \code{datpoli}
 #' @param polibase objeto do tipo \code{polijusU} contendo ajuste da curva base
 #' @param min_reg número mínimo de registros para eligibilidade a ajuste individual
@@ -97,7 +92,75 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
 extraipats <- function(dat, polibase, min_reg, quais) {
 
+    dadospat <- split(dat$hist_est, dat$hist_est$pat)
 
+    remanso   <- sapply(dat$patinfo, "[[", "remanso")
+    dadospat  <- dadospat[remanso]
+
+    if(!missing("quais")) {
+        quais <- as.numeric(quais)
+        quais <- formatC(quais, 1, 5, "f", "0")
+
+        out <- dadospat[quais]
+
+        if(any(sapply(out, function(d) is.null(dim(d))))) {
+            qualna <- quais[which(sapply(out, function(d) is.null(dim(d))))]
+            cli::cli_abort(c("patamares {qualna} nao podem ser utilizados",
+                "x" = "Possiveis causas: patamar por inteiro nao tem remanso ou nao tem pontos"))
+        }
+
+        out <- lapply(out, function(d) d[valido == TRUE])
+
+        return(out)
+    }
+
+    patamares <- names(dadospat)
+    for(pat in patamares) {
+
+        dpat <- dadospat[[pat]]
+        vazconv <- dat$patinfo[[pat]]$vazconv_reg
+
+        if(is.na(vazconv)) {
+
+            mod <- tail(dat$patinfo[[pat]]$tend, 1)[[1]]
+
+            vx  <- seq(dpat$vazao[1], dpat$vazao[nrow(dpat)], length.out = 500)
+            vy1 <- predict(mod, data.frame(vazao = vx))
+            vy2 <- predict(polibase, data.frame(vazao = vx))
+            if(any(vy1 < vy2)) dpat[vazao > vx[which(vy1 < vy2)[1]], valido := FALSE]
+        } else {
+
+            dpat[vazao >= vazconv, valido := FALSE]
+        }
+    }
+
+    numregpar <- sapply(dadospat, function(d) d[valido == TRUE, .N])
+    patregmin <- patamares[numregpar > min_reg]
+    patregminN <- as.numeric(patregmin)
+
+    if(!(attr(dat, "namax") %in% as.numeric(patregmin))) {
+
+        # // TODO:
+        # implementar um metodo de selecao dos graus de liberdade e faixa para amostragem
+        # do novo conjunto de dados
+
+        #surf <- mgcv::gam(njus ~ s(vazao, k = 15, bs = "cs", m = 2) + s(nmont, k = 15, bs = "cs", m = 2),
+        #    data = dat$hist_est[valido == TRUE])
+    }
+
+    numpoli <- ifelse(length(patregmin) < 4, length(patregmin), 4)
+
+    minref   <- predict(polibase, newdata = data.frame(vazao = 0))
+    rangeref <- seq(minref, tail(patregminN, 1), length.out = numpoli + 1)[-1]
+
+    dists <- lapply(seq(numpoli), function(i) abs(patregminN - rangeref[i]))
+    out   <- sapply(dists, function(v) patregmin[which.min(v)])
+
+    out <- dadospat[out]
+
+    out <- lapply(out, function(d) d[valido == TRUE])
+
+    return(out)
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
