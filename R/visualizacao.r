@@ -40,7 +40,7 @@
 #' 
 #' @export
 
-plot.datpoli <- function(x, qual, ...) {
+plot.datpoli <- function(x, qual, legenda = TRUE, ...) {
 
     if(missing(qual)) qual <- "brutos+estaveis+filtrados"
     if(qual == "todos") qual <- "brutos+estaveis+filtrados"
@@ -50,7 +50,7 @@ plot.datpoli <- function(x, qual, ...) {
     if(grepl("^conv_", qual)) plot_func <- plota_patconv
     if(grepl("^remanso$", qual)) plot_func <- plota_remanso
 
-    plot_func(x, qual)
+    plot_func(x, qual, legenda = legenda)
 }
 
 #' @export
@@ -142,9 +142,24 @@ plot.polijusU <- function(x, ...) {
         col = c("deepskyblue2", cores[seq(npoli)]))
 }
 
+#' @export
+
+plot.datpoliind <- function(x, datorig, ...) {
+
+    plot(datorig, "filtrados", FALSE)
+
+    cores <- c("red", "purple", "gold3", "orange3")
+    for(i in seq_along(x)) {
+        points(x[[i]][, 3:2], col = cores[i], pch = 16)
+    }
+    legend("bottomright", inset = .02,
+        legend = c("Dados filtrados", paste0("Pat ", names(x))),
+        pch = 16, col = c("deepskyblue1", cores))
+}
+
 # HELPERS ------------------------------------------------------------------------------------------
 
-plota_datfull <- function(x, qual) {
+plota_datfull <- function(x, qual, legenda) {
 
     valido <- tipo <- NULL
 
@@ -194,9 +209,11 @@ plota_datfull <- function(x, qual) {
     plot(dplot$vazao, dplot$njus, panel.first = grid(col = "grey85"), col = cores, pch = 16,
         xlim = ranges[[1]], ylim = ranges[[2]],
         xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
-    legend("bottomright", inset = .02, title = "Dados ",
-        legend = sub("estaveis", "est\u00E1veis", qual), pch = 16,
-        col = escala[qual])
+    if(legenda) {
+        legend("bottomright", inset = .02, title = "Dados ",
+            legend = sub("estaveis", "est\u00E1veis", qual), pch = 16,
+            col = escala[qual])
+    }
 }
 
 plota_remanso <- function(x, ...) {
@@ -245,7 +262,7 @@ plota_remanso <- function(x, ...) {
         fill = c("deepskyblue2", "green4"))
 }
 
-plota_patfiltro <- function(x, qual) {
+plota_patfiltro <- function(x, qual, ...) {
 
     pat <- valido <- filtro <- cores <- NULL
 

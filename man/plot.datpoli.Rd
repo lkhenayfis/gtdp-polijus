@@ -4,7 +4,7 @@
 \alias{plot.datpoli}
 \title{Plot de objetos \code{datpoli}}
 \usage{
-\method{plot}{datpoli}(x, qual, ...)
+\method{plot}{datpoli}(x, qual, legenda = TRUE, ...)
 }
 \arguments{
 \item{x}{objeto \code{datpoli}}

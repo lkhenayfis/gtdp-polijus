@@ -159,6 +159,7 @@ extraipats <- function(dat, polibase, min_reg, quais) {
     out <- dadospat[out]
 
     out <- lapply(out, function(d) d[valido == TRUE])
+    class(out) <- "datpoliind"
 
     return(out)
 }
