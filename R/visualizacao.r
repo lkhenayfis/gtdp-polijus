@@ -157,6 +157,31 @@ plot.datpoliind <- function(x, datorig, ...) {
         pch = 16, col = c("deepskyblue1", cores))
 }
 
+#' @export
+
+plot.polijusM <- function(x, full = FALSE, ...) {
+
+    ncurvas <- attr(x, "ncurvas")
+
+    cores <- c("green4", "red", "purple", "gold3", "orange3")
+
+    if(full) {
+        ranges <- list(range(x$curvas[[1]]$model$vazao), range(x$curvas[[1]]$model$njus))
+    } else {
+        ranges <- list(range(x$model$vazao), range(x$model$njus))
+    }
+    vx <- x$curvas[[1]]$model$vazao
+
+    plot(x$model$vazao, x$model$njus, panel.first = grid(col = "grey85"), col = "deepskyblue1",
+        pch = 16, xlim = ranges[[1]], ylim = ranges[[2]],
+        xlab = expression("Vaz\u00E3o [m"^3 * "/s]"), ylab = "N\u00EDvel de jusante [m]")
+    for(i in rev(seq(ncurvas))) {
+        lines(vx, predict(x$curvas[[i]], newdata = data.frame(vazao = vx)), col = cores[i], lwd = 2)
+    }
+    legend("bottomright", inset = .02,
+        legend = sapply(x$curvas, attr, "tag"), lwd = 2, lty = 1, col = cores)
+}
+
 # HELPERS ------------------------------------------------------------------------------------------
 
 plota_datfull <- function(x, qual, legenda) {
