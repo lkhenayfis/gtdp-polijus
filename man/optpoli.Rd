@@ -8,9 +8,9 @@
 \usage{
 optpoli(dat, ext, graus, pto_turbmax0, ..., opcoes)
 
-\method{optpoli}{datcbase}(dat, ext, graus, pto_turbmax0, pto_ext0, opcoes)
+\method{optpoli}{datcbase}(dat, ext, graus, pto_turbmax0, pto_ext0, opcoes, ...)
 
-\method{optpoli}{default}(dat, ext, graus, pto_turbmax0, vaz_ext0, zero_forcado, opcoes)
+\method{optpoli}{default}(dat, ext, graus, pto_turbmax0, vaz_ext0, zero_forcado, opcoes, ...)
 }
 \arguments{
 \item{dat}{objeto do tipo \code{datcbase} ou \code{data.table}. Ver Detalhes}
@@ -101,8 +101,8 @@ yturbmax <- dbase$hist[(vazao < engef * 1.05) & (vazao > engef * 0.95), mean(nju
 pto_turbmax0 <- c(engef, yturbmax)
 
 # utilizando minimizacao de descontinuidade
-ajustes3poli <- optpoli(dbase, "CAD", graus = graus, pto_ext0 = pto_ext0, pto_turbmax0 = pto_turbmax0,
-    opcoes = list(min_descont = TRUE))
+ajustes3poli <- optpoli(dbase, "CAD", graus = graus, pto_ext0 = pto_ext0,
+    pto_turbmax0 = pto_turbmax0, opcoes = list(min_descont = TRUE))
 
 # por fim, podemos ver uma compilacao de todos os ajustes com
 do.call(summary, ajustes3poli)

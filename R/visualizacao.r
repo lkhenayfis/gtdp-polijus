@@ -28,6 +28,7 @@
 #' 
 #' @param x objeto \code{datpoli}
 #' @param qual string indicando o que deve ser plotado. Ver Detalhes
+#' @param legenda booleano indicando se a legenda deve ou nao ser adicionada
 #' @param ... não é utilizado, existe apenas para compatibilização com a genérica \code{plot}
 #' 
 #' @return plot das informações requisitadas em \code{qual}

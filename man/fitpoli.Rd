@@ -8,9 +8,9 @@
 \usage{
 fitpoli(dat, ext, graus, pto_turbmax, ...)
 
-\method{fitpoli}{datcbase}(dat, ext, graus, pto_turbmax, pto_ext)
+\method{fitpoli}{datcbase}(dat, ext, graus, pto_turbmax, pto_ext, ...)
 
-\method{fitpoli}{default}(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado)
+\method{fitpoli}{default}(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado, ...)
 }
 \arguments{
 \item{dat}{objeto do tipo \code{datcbase} ou \code{data.table}. Ver Detalhes}

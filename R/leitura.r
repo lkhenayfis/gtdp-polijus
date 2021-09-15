@@ -112,7 +112,7 @@ importadados <- function(path = NULL) {
 
 new_datpoli <- function(path, cod, hist, ext) {
 
-    USI <- VAZEF <- NULL
+    USI <- VAZEF <- VAZMAX <- NAMAX <- NULL
 
     hist <- tratahist(hist)
     ext  <- trataext(ext)

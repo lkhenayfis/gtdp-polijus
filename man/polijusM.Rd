@@ -15,7 +15,7 @@ new_polijusM(datorig, polibase, l_poliind)
 
 \method{print}{polijusM}(x, ...)
 
-\method{coef}{polijusM}(x, ...)
+\method{coef}{polijusM}(object, ...)
 
 \method{fitted}{polijusM}(object, ...)
 
@@ -69,7 +69,7 @@ datbase <- extraibase(dummydata)
 ext   <- 1
 graus <- list(2:4, 2:4)
 
-maxvaz   <- 1.1 * dbase$hist[, max(vazao)]
+maxvaz   <- 1.1 * datbase$hist[, max(vazao)]
 pto_ext0 <- c(maxvaz, dummydata$ext[[ext]](maxvaz))
 
 polibase <- optpoli(datbase, ext, graus, pto_ext0 = pto_ext0)[[2]]

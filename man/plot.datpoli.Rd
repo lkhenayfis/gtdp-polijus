@@ -11,6 +11,8 @@
 
 \item{qual}{string indicando o que deve ser plotado. Ver Detalhes}
 
+\item{legenda}{booleano indicando se a legenda deve ou nao ser adicionada}
+
 \item{...}{não é utilizado, existe apenas para compatibilização com a genérica \code{plot}}
 }
 \value{

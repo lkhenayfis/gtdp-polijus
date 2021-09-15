@@ -21,7 +21,7 @@ NULL
 #' ext   <- 1
 #' graus <- list(2:4, 2:4)
 #' 
-#' maxvaz   <- 1.1 * dbase$hist[, max(vazao)]
+#' maxvaz   <- 1.1 * datbase$hist[, max(vazao)]
 #' pto_ext0 <- c(maxvaz, dummydata$ext[[ext]](maxvaz))
 #' 
 #' polibase <- optpoli(datbase, ext, graus, pto_ext0 = pto_ext0)[[2]]
@@ -64,9 +64,9 @@ NULL
 
 new_polijusM <- function(datorig, polibase, l_poliind) {
 
-    vazao <- njus <- nmont <- NULL
+    vazao <- njus <- nmont <- valido <- NULL
 
-    hist <- datorig$hist_est[valido == TRUE, .(vazao, njus, nmont)]
+    hist <- datorig$hist_est[valido == TRUE, list(vazao, njus, nmont)]
 
     curvas  <- c(list(curvabase = polibase), l_poliind)
     ncurvas <- length(curvas)
@@ -112,13 +112,16 @@ print.polijusM <- function(x, ...) {
     print(mat)
 }
 
+#' @param object objeto tipo \code{polijusM}
+#' @param ... demais parâmetros 
+#' 
 #' @rdname polijusM
 #' 
 #' @export
 
-coef.polijusM <- function(x, ...) {
+coef.polijusM <- function(object, ...) {
 
-    coefs <- lapply(x$curvas, coef)
+    coefs <- lapply(object$curvas, coef)
     for(i in seq(coefs)) {
         mat <- coefs[[i]]
         rownames(mat) <- NULL
@@ -134,14 +137,13 @@ coef.polijusM <- function(x, ...) {
     print(coefs)
 }
 
-#' @param object objeto tipo \code{polijusM}
-#' @param ... demais parâmetros 
-#' 
 #' @rdname polijusM
 #' 
 #' @export 
 
 fitted.polijusM <- function(object, ...) {
+
+    cinf <- csup <- predinf <- predsup <- refinf <- refsup <- vazao <- nmont <- pred <- NULL
 
     model   <- copy(object$model)
     ncurvas <- attr(object, "ncurvas")
@@ -157,8 +159,8 @@ fitted.polijusM <- function(object, ...) {
 
     predcurva <- function(x, ind) predict(object$curvas[[ind[1]]], newdata = data.frame(vazao = x))
 
-    model[, c("cinf", "csup") := .(curvainf, curvasup)]
-    model[, c("refinf", "refsup") := .(refs[cinf], refs[csup])]
+    model[, c("cinf", "csup") := list(curvainf, curvasup)]
+    model[, c("refinf", "refsup") := list(refs[cinf], refs[csup])]
     model[, predinf := predcurva(vazao, cinf), by = cinf]
     model[, predsup := predcurva(vazao, csup), by = csup]
 

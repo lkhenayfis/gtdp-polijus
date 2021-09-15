@@ -92,6 +92,8 @@ classfiltrapats <- function(dat, tol = c(3, 2, 1.25), plot.dir) {
 
 extraipats <- function(dat, polibase, min_reg, quais) {
 
+    vazao <- valido <- NULL
+
     dadospat <- split(dat$hist_est, dat$hist_est$pat)
 
     remanso   <- sapply(dat$patinfo, "[[", "remanso")

@@ -84,8 +84,8 @@ optpoli <- function(dat, ext, graus, pto_turbmax0, ..., opcoes) UseMethod("optpo
 #' pto_turbmax0 <- c(engef, yturbmax)
 #' 
 #' # utilizando minimizacao de descontinuidade
-#' ajustes3poli <- optpoli(dbase, "CAD", graus = graus, pto_ext0 = pto_ext0, pto_turbmax0 = pto_turbmax0,
-#'     opcoes = list(min_descont = TRUE))
+#' ajustes3poli <- optpoli(dbase, "CAD", graus = graus, pto_ext0 = pto_ext0,
+#'     pto_turbmax0 = pto_turbmax0, opcoes = list(min_descont = TRUE))
 #' 
 #' # por fim, podemos ver uma compilacao de todos os ajustes com
 #' do.call(summary, ajustes3poli)
@@ -94,7 +94,7 @@ optpoli <- function(dat, ext, graus, pto_turbmax0, ..., opcoes) UseMethod("optpo
 #' 
 #' @export
 
-optpoli.datcbase <- function(dat, ext, graus, pto_turbmax0, pto_ext0, opcoes) {
+optpoli.datcbase <- function(dat, ext, graus, pto_turbmax0, pto_ext0, opcoes, ...) {
 
     vazao <- njus <- NULL
 
@@ -222,7 +222,7 @@ optpoli.datcbase <- function(dat, ext, graus, pto_turbmax0, pto_ext0, opcoes) {
 #' 
 #' @export
 
-optpoli.default <- function(dat, ext, graus, pto_turbmax0, vaz_ext0, zero_forcado, opcoes) {
+optpoli.default <- function(dat, ext, graus, pto_turbmax0, vaz_ext0, zero_forcado, opcoes, ...) {
 
     vazao <- njus <- NULL
 

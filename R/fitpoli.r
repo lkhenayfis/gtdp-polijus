@@ -103,7 +103,7 @@ fitpoli <- function(dat, ext, graus, pto_turbmax, ...) UseMethod("fitpoli")
 #' 
 #' @export
 
-fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
+fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext, ...) {
 
     l_parse <- parseargsbase(dat, ext, graus, pto_turbmax, pto_ext)
     l_func  <- l_parse[[1]]
@@ -160,7 +160,7 @@ fitpoli.datcbase <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 #' 
 #' @export
 
-fitpoli.default <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
+fitpoli.default <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado, ...) {
 
     l_parse <- parseargsind(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado)
     l_func  <- l_parse[[1]]
@@ -448,6 +448,8 @@ fit_baseH2E1 <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
 parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
+    pat <- NULL
+
     dat <- copy(dat)
 
     ngraus <- length(graus)
@@ -520,7 +522,7 @@ parseargsind <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
 fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
 
-    vazao <- njus <- NULL
+    vazao <- njus <- pat <- NULL
 
     vazrestr <- seq(attr(dat, "vazzero"), vaz_ext, length.out = 1000)
 
@@ -550,7 +552,7 @@ fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
 
 fit_indH2 <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
 
-    vazao <- njus <- NULL
+    vazao <- njus <- pat <- NULL
 
     vazrestrh1 <- seq(attr(dat, "vazzero"), pto_turbmax[1], length.out = 1000)
 

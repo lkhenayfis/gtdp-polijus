@@ -40,7 +40,7 @@ NULL
 
 new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 
-    vazao <- poli <- NULL
+    vazao <- njus <- poli <- NULL
 
     if(!is.list(coefs)) {
         coefs <- list(poli1 = coefs)
@@ -59,7 +59,7 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
     }
 
     dat$hist <- dat$hist[, c("vazao", "njus")]
-    if(length(dat$ext) > 0) dat$ext <- dat$ext[[1]][, .(vazao, njus)] else dat$ext <- NULL
+    if(length(dat$ext) > 0) dat$ext <- dat$ext[[1]][, list(vazao, njus)] else dat$ext <- NULL
     model  <- rbindlist(dat)
     breaks <- unlist(bounds)
     model[, poli := findInterval(vazao, breaks[!duplicated(breaks)], all.inside = TRUE)]
@@ -99,6 +99,8 @@ new_polijusU <- function(coefs, bounds, dat, vcov, tipo, tag) {
 #' @export
 
 `[.polijusU` <- function(x, i, ...) {
+
+    vazao <- NULL
 
     rangei <- range(i)
 
@@ -265,7 +267,7 @@ fitted.polijusU <- function(object, derivada = FALSE, ...) {
 
 predict.polijusU <- function(object, newdata, derivada = FALSE, ...) {
 
-    vazao <- NULL
+    vazao <- poli <- NULL
 
     npoli <- attr(object, "npoli")
     coefs <- object$coefs
@@ -305,8 +307,10 @@ predict.polijusU <- function(object, newdata, derivada = FALSE, ...) {
 
 residuals.polijusU <- function(object, ...) {
 
+    njus <- poli <- NULL
+
     fitted <- fitted(object)
-    data <- object$model[, .(njus - fitted, poli)]
+    data <- object$model[, list(njus - fitted, poli)]
 
     out <- split(data$V1, data$poli)
 
