@@ -4,10 +4,9 @@
 #' 
 #' Função que realiza a filtragem de vazões estáveis no dado bruto
 #' 
-#' A identificação de vazões estáveis segue o processo descrito na 
-#' \code{vignette("polijus", package = "polijus")}. De forma geral, são buscados \code{n} registros
-#' horários consecutivos de vazão nos quais a máxima diferença percentual entre o primeiro e os 
-#' \code{n - 1} restantes seja inferior ao valor \code{tol}.
+#' De forma geral, são buscados \code{n} registros horários consecutivos de vazão nos quais a máxima
+#' diferença percentual entre o primeiro e os \code{n - 1} restantes seja inferior ao valor 
+#' \code{tol}.
 #' 
 #' A comparação é feita sempre em respeito ao primeiro registro e não de forma sequencial 
 #' intencionalmente. Isto busca evitar a consideração incorreta de tomadas de carga lentas (ao longo

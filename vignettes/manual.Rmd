@@ -1,0 +1,85 @@
+---
+title: "GTDP Polijus"
+subtitle: "Manual de uso"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{manual}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(polijus)
+```
+
+## Introdução
+
+O pacote `polijus` contém o conjunto de funções necessárias para realização de todas as etapas de
+ajuste das curvas vazão-nível de jusante definidas conforme metodologia estabelecida pelo GTDP. Além
+daquelas necessárias para aplicação da metodologia, diversas auxiliares para leitura de dados,
+visualização de resultados e escrita de saídas são fornecidas.
+
+Esta vignette é um manual de uso do pacote, apresentando cada uma das ferramentas contidas no pacote
+no contexto de uma análise completa, da leitura a geração de resultados. Aspectos metodológicos do
+processo de ajuste não são discutidos.
+
+## Exemplo de analise completa
+
+O bloco a seguir apresenta um exemplo enxuto de como poderia transcorrer o desenvolvimento do 
+conjunto de curvas para uma dada usina (neste caso, utilizando dado dummy embutido no pacote).
+
+```{r, eval = FALSE}
+# Leitura e tratamentos iniciais ----------------------------------------------
+
+# leitura do dado dummy a partir da planilha padrao
+arq <- system.file("extdata", "dummydata.xlsx", package = "polijus")
+dat <- importadados(path = arq)
+
+# filtragem de vazoes estaveis
+dat <- filtravazest(dat)
+
+# classifica dado por patamares do reservatorio a jusante e filtra dados por patamar
+dat <- classfiltrapats(dat)
+
+# analisa influencia de remanso
+dat <- evalremanso(dat)
+
+# Extracao e ajuste de curva base ---------------------------------------------
+
+# extrai dados sem efeito de remanso
+dado_base <- extraibase(dat)
+
+# otimizacao de ajuste da curva
+ajustesbase <- optpoli(dado_base, "CAD", list(2:4, 2:4), pto_ext0 = c(934.7, 34.6))
+
+# escolha do ajuste mais coerente
+curvabase <- ajustesbase[[2]]
+
+# Extracao de patamares individuais e seu ajuste ------------------------------
+
+# escolhe patamares para ajuste individual
+datsind <- extraipats(dat, curvabase, 10)
+
+# otimizacao de cada ajuste
+ajustesind <- lapply(datsind, function(d) optpoli(d, curvabase, list(2:4), vaz_ext0 = max(d$vazao)))
+
+# escolhe os mais coerentes
+curvasind <- lapply(ajustesind, "[[", 1)
+
+# Monta superficie chave ------------------------------------------------------
+
+# contrucao da superficie chave
+surfchave <- superficiechave(dat, curvabase, curvasind)
+```
+
+Nas seções a seguir cada trecho da análise será exposto em mais detalhe
+
+## Leitura e tratamento de dados
+
