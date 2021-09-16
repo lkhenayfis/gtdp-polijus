@@ -7,7 +7,8 @@
 #' @name polijusM
 NULL
 
-#' @details Construtor primário de objetos \code{polijusM}
+#' @details \code{superficiechave} é uma wrapper utilizada para combinar todos os ajustes realizados
+#'     em um único objeto
 #' 
 #' @param datorig objeto \code{datpoli} contendo os dados originais utilizados para ajuste
 #' @param polibase curva base ajustada
@@ -35,13 +36,13 @@ NULL
 #' 
 #' # monta objeto final -----------------------------------
 #' 
-#' polijus <- new_polijusM(dummydata, polibase, l_poliind)
+#' surfchave <- superficiechave(dummydata, polibase, l_poliind)
 #' 
 #' \dontrun{
-#'     print(polijus)
-#'     coef(polijus)
-#'     summary(polijus)
-#'     plot(polijus)
+#'     print(surfchave)
+#'     coef(surfchave)
+#'     summary(surfchave)
+#'     plot(surfchave)
 #' }
 #' 
 #' @return objeto \code{polijusM}, uma lista contendo
@@ -62,6 +63,17 @@ NULL
 #' 
 #' @export
 
+superficiechave <- function(datorig, polibase, l_poliind) {
+
+    if(missing("l_poliind")) l_poliind <- list()
+
+    new_polijusM(datorig, polibase, l_poliind)
+}
+
+#' @rdname polijusM
+#' 
+#' @export
+
 new_polijusM <- function(datorig, polibase, l_poliind) {
 
     vazao <- njus <- nmont <- valido <- NULL
@@ -75,7 +87,8 @@ new_polijusM <- function(datorig, polibase, l_poliind) {
     refind <- sapply(l_poliind, function(poli) as.numeric(sub(".* ", "", attr(poli, "tag"))))
 
     desloc  <- mapply(l_poliind, refind, FUN = function(poli, ref) ref - coef(poli)[1, 3])
-    refbase <- coef(polibase)[1, 3] + mean(desloc)
+    desloc  <- ifelse(length(desloc) == 0, 0, mean(desloc))
+    refbase <- coef(polibase)[1, 3] + desloc
 
     refs <- structure(c(refbase, refind), names = names(npolis))
 
@@ -84,7 +97,7 @@ new_polijusM <- function(datorig, polibase, l_poliind) {
     attr(out, "cod")     <- attr(datorig, "cod")
     attr(out, "ncurvas") <- ncurvas
     attr(out, "npolis")  <- npolis
-    attr(out, "refs")    <- refs
+    attr(out, "refs")    <- unlist(refs)
     class(out) <- "polijusM"
 
     return(out)

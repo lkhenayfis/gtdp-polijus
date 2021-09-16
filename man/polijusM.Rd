@@ -2,6 +2,7 @@
 % Please edit documentation in R/classe_polijusM.r
 \name{polijusM}
 \alias{polijusM}
+\alias{superficiechave}
 \alias{new_polijusM}
 \alias{print.polijusM}
 \alias{coef.polijusM}
@@ -11,6 +12,8 @@
 \alias{summary.polijusM}
 \title{Objeto \code{polijusM}}
 \usage{
+superficiechave(datorig, polibase, l_poliind)
+
 new_polijusM(datorig, polibase, l_poliind)
 
 \method{print}{polijusM}(x, ...)
@@ -59,7 +62,8 @@ Adicionalmente possui atributos
 Contrutor e métodos da classe \code{polijusM} -- curva de jusante multivariada
 }
 \details{
-Construtor primário de objetos \code{polijusM}
+\code{superficiechave} é uma wrapper utilizada para combinar todos os ajustes realizados
+em um único objeto
 }
 \examples{
 
@@ -83,13 +87,13 @@ l_poliind <- lapply(l_datind, function(dat) {
 
 # monta objeto final -----------------------------------
 
-polijus <- new_polijusM(dummydata, polibase, l_poliind)
+surfchave <- superficiechave(dummydata, polibase, l_poliind)
 
 \dontrun{
-    print(polijus)
-    coef(polijus)
-    summary(polijus)
-    plot(polijus)
+    print(surfchave)
+    coef(surfchave)
+    summary(surfchave)
+    plot(surfchave)
 }
 
 }
