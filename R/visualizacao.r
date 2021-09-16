@@ -153,8 +153,8 @@ plot.datpoliind <- function(x, datorig, ...) {
     for(i in seq_along(x)) {
         points(x[[i]][, 3:2], col = cores[i], pch = 16)
     }
-    legend("bottomright", inset = .02,
-        legend = c("Dados filtrados", paste0("Pat ", names(x))),
+    legend("bottomright", inset = .02, ncol = 2,
+        legend = c("Dados filtrados", paste0("Patamar ", names(x))),
         pch = 16, col = c("deepskyblue1", cores))
 }
 
@@ -164,7 +164,7 @@ plot.polijusM <- function(x, full = FALSE, ...) {
 
     ncurvas <- attr(x, "ncurvas")
 
-    cores <- c("green4", "red", "purple", "gold3", "orange3")
+    cores <- c("green4", "red", "purple", "gold3", "orange3")[seq((ncurvas))]
 
     if(full) {
         ranges <- list(range(x$curvas[[1]]$model$vazao), range(x$curvas[[1]]$model$njus))
@@ -179,8 +179,10 @@ plot.polijusM <- function(x, full = FALSE, ...) {
     for(i in rev(seq(ncurvas))) {
         lines(vx, predict(x$curvas[[i]], newdata = data.frame(vazao = vx)), col = cores[i], lwd = 2)
     }
-    legend("bottomright", inset = .02,
-        legend = sapply(x$curvas, attr, "tag"), lwd = 2, lty = 1, col = cores)
+    legend("bottomright", inset = .02, ncol = 2,
+        legend = c("Dados filtrados", sapply(x$curvas, attr, "tag")),
+        pch = c(16, rep(NA, ncurvas)), lwd = c(NA, rep(2, ncurvas)), lty = c(NA, rep(1, ncurvas)),
+        col = c("deepskyblue1", cores))
 }
 
 # HELPERS ------------------------------------------------------------------------------------------
