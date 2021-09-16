@@ -294,7 +294,7 @@ fit_baseH1 <- function(dat, graus, ...) {
     sol    <- limSolve::lsei(A, b, E, f, G, h, fulloutput = TRUE)
     bounds <- range(vazrestr)
 
-    new_polijusU(sol$X, bounds, dat, sol$covar, "H1", "curva base")
+    new_polijusU(sol$X, bounds, dat, sol$covar, "H1", "Curva Base")
 }
 
 fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
@@ -337,7 +337,7 @@ fit_baseH2 <- function(dat, graus, pto_turbmax, ...) {
 
     bounds <- list(range(vazrestrh1), range(vazrestrh2))
 
-    new_polijusU(coef, bounds, dat, sol$covar, "H2", "curvabase")
+    new_polijusU(coef, bounds, dat, sol$covar, "H2", "Curva Base")
 }
 
 fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
@@ -382,7 +382,7 @@ fit_baseH1E1 <- function(dat, ext, graus, pto_ext, ...) {
 
     bounds <- list(range(vazrestrh1), range(vazrestrh2))
 
-    new_polijusU(coef, bounds, dat, sol$covar, "H1E1", "curvabase")
+    new_polijusU(coef, bounds, dat, sol$covar, "H1E1", "Curva Base")
 }
 
 fit_baseH2E1 <- function(dat, ext, graus, pto_turbmax, pto_ext) {
@@ -441,7 +441,7 @@ fit_baseH2E1 <- function(dat, ext, graus, pto_turbmax, pto_ext) {
 
     bounds <- list(range(vazrestrh1), range(vazrestrh2), range(vazrestre1))
 
-    new_polijusU(coef, bounds, dat, sol$covar, "H1E1", "curvabase")
+    new_polijusU(coef, bounds, dat, sol$covar, "H1E1", "Curva Base")
 }
 
 # CURVAS INDIVIDUAIS -------------------------------------------------------------------------------
@@ -543,7 +543,7 @@ fit_indH1 <- function(dat, ext, graus, vaz_ext, zero_forcado, ...) {
     bounds <- range(vazrestr)
 
     out <- new_polijusU(sol$X, bounds, list(hist = dat, ext = NULL),
-        sol$covar, paste0("H1z", zero_forcado * 1), paste0("patamar ", dat[1, pat]))
+        sol$covar, paste0("H1z", zero_forcado * 1), paste0("Patamar ", dat[1, pat]))
     ext$model <- ext$model[0]
     out <- c(out, ext)
 
@@ -595,7 +595,7 @@ fit_indH2 <- function(dat, ext, graus, pto_turbmax, vaz_ext, zero_forcado) {
     bounds <- list(range(vazrestrh1), range(vazrestrh2))
 
     out <- new_polijusU(coef, bounds, list(hist = dat, ext = NULL),
-        sol$covar, paste0("H1z", zero_forcado * 1), paste0("patamar ", dat[1, pat]))
+        sol$covar, paste0("H1z", zero_forcado * 1), paste0("Patamar ", dat[1, pat]))
     ext$model <- ext$model[0]
     out <- c(out, ext)
 
