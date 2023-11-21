@@ -31,6 +31,10 @@
 
 importadados <- function(path = NULL) {
 
+    if (!requireNamespace("readxl", quietly = TRUE)) {
+        stop("Pacote 'readxl (>= 1.3.1)' necessario para leitura de arquivos de dados")
+    }
+
     if(is.null(path)) path <- file.choose()
 
     # Le cadastro e pega codigo da usina
